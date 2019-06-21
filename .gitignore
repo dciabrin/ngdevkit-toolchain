@@ -1,0 +1,22 @@
+# Object files
+*.o
+*.elf
+*.ihx
+*.rel
+
+# Libraries
+*.a
+*.so
+
+# Generated content
+build/
+local/
+
+# Download area
+toolchain/
+!toolchain/README.md
+
+# Editors tmp
+*~
+\#*#
+.#*
