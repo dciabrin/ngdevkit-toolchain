@@ -64,19 +64,19 @@ toolchain/%:
 
 
 toolchain/$(SRC_BINUTILS).tar.bz2:
-       curl -L $(GNU_MIRROR)/binutils/$(notdir $@) -o $@
+	curl -L $(GNU_MIRROR)/binutils/$(notdir $@) -o $@
 
 toolchain/$(SRC_GCC).tar.xz:
-       curl -L $(GNU_MIRROR)/gcc/$(SRC_GCC)/$(notdir $@) -o $@
+	curl -L $(GNU_MIRROR)/gcc/$(SRC_GCC)/$(notdir $@) -o $@
 
 toolchain/$(SRC_NEWLIB).tar.gz:
-       curl -L $(NEWLIB_MIRROR)/newlib/$(notdir $@) -o $@
+	curl -L $(NEWLIB_MIRROR)/newlib/$(notdir $@) -o $@
 
 toolchain/$(SRC_GDB).tar.gz:
-       curl -L $(GNU_MIRROR)/gdb/$(notdir $@) -o $@
+	curl -L $(GNU_MIRROR)/gdb/$(notdir $@) -o $@
 
 toolchain/$(SRC_SDCC).tar.bz2:
-       curl -L http://sourceforge.net/projects/sdcc/files/sdcc/$(SRC_SDCC:sdcc-src-%=%)/$(notdir $@) -o $@
+	curl -L http://sourceforge.net/projects/sdcc/files/sdcc/$(SRC_SDCC:sdcc-src-%=%)/$(notdir $@) -o $@
 
 
 toolchain/$(SRC_BINUTILS): toolchain/$(SRC_BINUTILS).tar.bz2
@@ -88,7 +88,7 @@ toolchain/sdcc: toolchain/$(SRC_SDCC).tar.bz2
 
 build-toolchain: $(TOOLCHAIN:%=build/%)
 
-build/ngbinutils:
+build/ngbinutils: toolchain/$(SRC_BINUTILS)
 	@echo compiling binutils...
 	mkdir -p build/ngbinutils && \
 	cd build/ngbinutils && \
@@ -102,9 +102,9 @@ build/ngbinutils:
 	--datadir=/usr/m68k-neogeo-elf/lib \
 	--includedir=/usr/m68k-neogeo-elf/include \
 	--bindir=/usr/bin \
-	-v && make
+	-v && $(MAKE)
 
-build/nggcc: build/ngbinutils
+build/nggcc: build/ngbinutils toolchain/$(SRC_GCC)
 	@echo compiling gcc...
 	mkdir -p build/nggcc && \
 	cd build/nggcc && \
@@ -139,9 +139,9 @@ build/nggcc: build/ngbinutils
 	--disable-multilib \
 	--disable-libssp \
 	--enable-languages=c \
-	-v && make build_tooldir=/usr/m68k-neogeo-elf
+	-v && $(MAKE) build_tooldir=/usr/m68k-neogeo-elf
 
-build/ngnewlib: build/nggcc
+build/ngnewlib: build/nggcc toolchain/$(SRC_NEWLIB)
 	@echo compiling newlib...
 	mkdir -p build/ngnewlib && \
 	cd build/ngnewlib && \
@@ -163,9 +163,9 @@ build/ngnewlib: build/nggcc
 	--bindir=/usr/bin \
 	--enable-target-optspace=yes \
 	--enable-newlib-multithread=no \
-	-v && make
+	-v && $(MAKE)
 
-build/nggdb:
+build/nggdb: toolchain/$(SRC_BINUTILS) toolchain/$(SRC_GDB)
 	@echo compiling gdb...
 	mkdir -p build/nggdb && \
 	cd build/nggdb && \
@@ -180,9 +180,9 @@ build/nggdb:
 	--includedir=$(prefix)/m68k-neogeo-elf/include \
 	--bindir=$(prefix)/bin \
 	--target=m68k-neogeo-elf \
-	-v && make
+	-v && $(MAKE)
 
-build/ngsdcc:
+build/ngsdcc: toolchain/sdcc
 	@echo compiling sdcc...
 	mkdir -p build/ngsdcc && \
 	cd build/ngsdcc && \
@@ -208,7 +208,7 @@ build/ngsdcc:
 	--disable-gbz80-port \
 	--disable-tlcs90-port \
 	--disable-stm8-port \
-	-v && make
+	-v && $(MAKE)
 
 
 install: $(TOOLCHAIN:%=install-%)
