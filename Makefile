@@ -119,8 +119,8 @@ build/nggcc: build/ngbinutils toolchain/$(SRC_GCC)
 	RANLIB_FOR_TARGET=$$PWD/../ngbinutils/binutils/ranlib \
 	READELF_FOR_TARGET=$$PWD/../ngbinutils/binutils/readelf \
 	STRIP_FOR_TARGET=$$PWD/../ngbinutils/binutils/strip-new \
-        CFLAGS="$$CFLAGS -Wno-format-security" \
-        CXXFLAGS="$$CXXFLAGS -Wno-format-security" \
+	CFLAGS="$$CFLAGS -Wno-format-security" \
+	CXXFLAGS="$$CXXFLAGS -Wno-format-security" \
 	../../toolchain/gcc-5.5.0/configure \
 	--target=m68k-neogeo-elf \
 	--prefix=/usr \
@@ -189,8 +189,8 @@ build/ngsdcc: toolchain/sdcc
 	include_dir_suffix=include \
 	lib_dir_suffix=lib \
 	../../toolchain/sdcc/configure \
-        --program-prefix=z80-neogeo-ihx- \
-        --prefix=$(prefix) \
+	--program-prefix=z80-neogeo-ihx- \
+	--prefix=$(prefix) \
 	--libexecdir=$(prefix)/z80-neogeo-ihx/lib \
 	--datarootdir=/usr/z80-neogeo-ihx \
 	--disable-non-free \
