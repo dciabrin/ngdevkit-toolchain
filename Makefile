@@ -139,7 +139,7 @@ build/nggcc: build/ngbinutils toolchain/$(SRC_GCC)
 	--disable-multilib \
 	--disable-libssp \
 	--enable-languages=c \
-	-v && $(MAKE) build_tooldir=/usr/m68k-neogeo-elf
+	-v && $(MAKE) tooldir=/usr/m68k-neogeo-elf build_tooldir=/usr/m68k-neogeo-elf
 
 build/ngnewlib: build/nggcc toolchain/$(SRC_NEWLIB)
 	@echo compiling newlib...
