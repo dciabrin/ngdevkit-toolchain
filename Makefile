@@ -94,7 +94,7 @@ $(BUILD)/ngbinutils: toolchain/$(SRC_BINUTILS)
 	CURPWD=$$(pwd) && \
 	mkdir -p $(BUILD)/ngbinutils && \
 	cd $(BUILD)/ngbinutils && \
-	sed -i -e 's/\(@item\) \(How GNU properties are merged.\)/\1\n\2/' $$CURPWD/toolchain/binutils-2.32/ld/ld.texi  && \
+	sed -i -e 's/\(@item\) \(How GNU properties are merged.\)/\1'$$'\\\n''\2/' $$CURPWD/toolchain/binutils-2.32/ld/ld.texi  && \
 	$$CURPWD/toolchain/$(SRC_BINUTILS)/configure \
 	--target=m68k-neogeo-elf \
 	--prefix=$(prefix) \
