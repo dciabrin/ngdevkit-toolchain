@@ -145,6 +145,7 @@ $(BUILD)/nggcc: $(BUILD)/ngbinutils toolchain/$(SRC_GCC)
 	--with-gnu-as \
 	--with-gnu-ld \
 	--with-newlib \
+	--without-isl \
 	--disable-multilib \
 	--disable-libssp \
 	--enable-languages=c \
