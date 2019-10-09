@@ -1,7 +1,7 @@
 # ngdevkit, open source development for Neo-Geo
 
 
-This git repository is a subpart of [ngdevkit](ngdevkit), an open
+This git repository is a subpart of [ngdevkit][ngdevkit], an open
 source SDK for Neo-Geo.
 
 ngdevkit-toolchain is the collection of open sources projects that
@@ -22,7 +22,7 @@ are used in ngdevkit to build and debug Neo-Geo programs:
 ## Build instruction
 
 ngdevkit-toolchain is meant to be consumed by the main
-[ngdevkit](ngdevkit) repository.  Please refer to this repository for
+[ngdevkit][ngdevkit] repository.  Please refer to this repository for
 build instruction.
 
 
