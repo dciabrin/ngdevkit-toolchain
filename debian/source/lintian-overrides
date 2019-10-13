@@ -1,0 +1,4 @@
+ngdevkit-toolchain: binary-from-other-architecture usr/m68k-neogeo-elf/lib/crt0.o
+ngdevkit-toolchain: binary-from-other-architecture usr/m68k-neogeo-elf/lib/sim-crt0.o
+ngdevkit-toolchain: file-in-unusual-dir
+ngdevkit-toolchain source: file-in-unusual-dir

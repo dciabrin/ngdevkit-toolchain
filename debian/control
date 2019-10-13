@@ -1,0 +1,15 @@
+Source: ngdevkit-toolchain
+Section: contrib/devel
+Priority: optional
+Maintainer: Damien Ciabrini <damien.ciabrini@gmail.com>
+Build-Depends: debhelper (>= 10)
+Standards-Version: 4.1.2
+Homepage: https://github.com/dciabrin/ngdevkit-toolchain
+Vcs-Git: https://github.com/dciabrin/ngdevkit-toolchain.git
+
+Package: ngdevkit-toolchain
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, python
+Description: Open source development for Neo-Geo
+ ngdevkit is a C/C++ software development kit for the Neo-Geo AES or
+ MVS hardware. This package provides the toolchain of the toolkit.

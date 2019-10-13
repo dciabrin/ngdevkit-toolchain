@@ -1,0 +1,23 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	dh_auto_build -- prefix=/usr libexecdir=/usr/lib
+# ngdevkit has a ./build directory, so force dh whenever we call build
+# build:
+# 	dh $@
+# .PHONY: build
+
+override_dh_auto_install:
+	dh_auto_install -- --eval 'override scriptdir = /usr/lib/m68k-neogeo-elf' --eval 'override sdcc_libdir = $$(DESTDIR)/usr/z80-neogeo/lib'
+	cd debian/ngdevkit-toolchain && \
+	for i in usr/m68k-neogeo-elf/bin/*; do \
+	    if [ "$$(stat -c '%h' $$i)" != "1" ]; then \
+	        ln -vnsf ../../bin/m68k-neogeo-elf-$$(basename $$i) $$i; \
+            fi; \
+	done && \
+	rm -rf usr/share/info/ usr/info/ && \
+	rm -rf usr/z80-neogeo/lib/src && \
+	find usr/z80-neogeo/lib/ -type d -empty -delete

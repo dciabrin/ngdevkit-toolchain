@@ -1,0 +1,10 @@
+ngdevkit-toolchain: new-package-should-close-itp-bug
+ngdevkit-toolchain: binary-from-other-architecture usr/m68k-neogeo-elf/lib/crt0.o
+ngdevkit-toolchain: binary-from-other-architecture usr/m68k-neogeo-elf/lib/sim-crt0.o
+ngdevkit-toolchain: file-in-unusual-dir
+ngdevkit-toolchain: non-standard-dir-in-usr usr/m68k-neogeo-elf/
+ngdevkit-toolchain: non-standard-dir-in-usr usr/z80-neogeo/
+ngdevkit-toolchain: binary-without-manpage usr/bin/m68k-neogeo*
+ngdevkit-toolchain: binary-without-manpage usr/bin/z80-neogeo*
+ngdevkit-toolchain: manpage-has-errors-from-man
+ngdevkit-toolchain: package-has-unnecessary-activation-of-ldconfig-trigger
