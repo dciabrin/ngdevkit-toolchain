@@ -197,6 +197,7 @@ $(BUILD)/nggdb: toolchain/$(SRC_BINUTILS) toolchain/$(SRC_GDB)
 $(BUILD)/ngsdcc: toolchain/sdcc
 	@echo compiling sdcc...
 	CURPWD=$$(pwd) && \
+	unset CPPFLAGS && \
 	mkdir -p $(BUILD)/ngsdcc && \
 	cd $(BUILD)/ngsdcc && \
 	include_dir_suffix=include \
