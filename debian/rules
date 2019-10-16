@@ -6,5 +6,7 @@
 override_dh_auto_build:
 	dh_auto_build -- prefix=/usr libexecdir=/usr/lib
 
+# we run MAKE directly because dh_auto_install runs make in dry-run to
+# check for the build system, and this breaks gcc generated includes
 override_dh_auto_install:
-	dh_auto_install -- --eval 'override scriptdir = /usr/lib/m68k-neogeo-elf' --eval 'override sdcc_libdir = $$(DESTDIR)/usr/z80-neogeo/lib'
+	$(MAKE) install -- prefix=/usr libexecdir=/usr/lib
