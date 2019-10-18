@@ -9,4 +9,4 @@ override_dh_auto_build:
 # we run MAKE directly because dh_auto_install runs make in dry-run to
 # check for the build system, and this breaks gcc generated includes
 override_dh_auto_install:
-	$(MAKE) install -- prefix=/usr libexecdir=/usr/lib
+	$(MAKE) install -- prefix=/usr libexecdir=/usr/lib DESTDIR=$$PWD/debian/ngdevkit-toolchain
