@@ -10,3 +10,8 @@ override_dh_auto_build:
 # check for the build system, and this breaks gcc generated includes
 override_dh_auto_install:
 	$(MAKE) install -- prefix=/usr libexecdir=/usr/lib DESTDIR=$$PWD/debian/ngdevkit-toolchain
+
+# Do not strip the m68k libraries with standard strip as this corrupts
+# the archives (e.g. libgcc.a)
+override_dh_strip:
+	true
