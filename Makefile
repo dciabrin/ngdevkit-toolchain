@@ -30,6 +30,9 @@ NEWLIB_MIRROR=ftp://sourceware.org/pub
 # GNU_MIRROR=https://mirror.checkdomain.de/gnu
 # NEWLIB_MIRROR=http://ftp.gwdg.de/pub/linux/sources.redhat.com
 
+# Local copy of the toolchain packages to skip download
+LOCAL_PACKAGE_DIR=
+
 # Version of external dependencies
 SRC_BINUTILS=binutils-2.32
 SRC_GCC=gcc-5.5.0
@@ -67,6 +70,7 @@ toolchain/%:
 	tar -C toolchain -xmf toolchain/$(notdir $<)
 
 
+ifndef LOCAL_PACKAGE_DIR
 toolchain/$(SRC_BINUTILS).tar.bz2:
 	curl -L $(GNU_MIRROR)/binutils/$(notdir $@) -o $@
 
@@ -81,6 +85,14 @@ toolchain/$(SRC_GDB).tar.gz:
 
 toolchain/$(SRC_SDCC).tar.bz2:
 	curl -L http://sourceforge.net/projects/sdcc/files/sdcc/$(SRC_SDCC:sdcc-src-%=%)/$(notdir $@) -o $@
+else
+toolchain/$(SRC_BINUTILS).tar.bz2 \
+toolchain/$(SRC_GCC).tar.xz \
+toolchain/$(SRC_NEWLIB).tar.gz \
+toolchain/$(SRC_GDB).tar.gz \
+toolchain/$(SRC_SDCC).tar.bz2:
+	cp $(LOCAL_PACKAGE_DIR)/$(notdir $@) $@
+endif
 
 
 toolchain/$(SRC_BINUTILS): toolchain/$(SRC_BINUTILS).tar.bz2
