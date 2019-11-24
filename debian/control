@@ -14,7 +14,7 @@ Homepage: https://github.com/dciabrin/ngdevkit-toolchain
 Vcs-Git: https://github.com/dciabrin/ngdevkit-toolchain.git
 
 Package: ngdevkit-toolchain
-Architecture: any
+Architecture: amd64
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Open source development for Neo-Geo
  ngdevkit is a C/C++ software development kit for the Neo-Geo AES or
