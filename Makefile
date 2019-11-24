@@ -60,6 +60,9 @@ unpack-toolchain: \
 	toolchain/$(SRC_GDB) \
 	toolchain/sdcc
 
+clean-toolchain:
+	find toolchain -mindepth 1 -maxdepth 1 -not -name README.md -exec rm -rf {} \;
+
 toolchain/%:
 	tar -C toolchain -xmf toolchain/$(notdir $<)
 
@@ -248,9 +251,8 @@ install-ngsdcc: $(BUILD)/ngsdcc
 clean:
 	rm -rf build
 
-distclean: clean
+distclean: clean clean-toolchain
 	rm -rf build local && \
-	find toolchain -mindepth 1 -maxdepth 1 -not -name README.md -exec rm -rf {} \; && \
 	find . -name '*~' -exec rm -f {} \;
 
 .PHONY: clean distclean
