@@ -3,8 +3,9 @@
 %:
 	dh $@
 
+# use the toolchain tarballs that have been pre-downloaded in ./debian
 override_dh_auto_build:
-	dh_auto_build -- prefix=/usr libexecdir=/usr/lib
+	dh_auto_build -- prefix=/usr libexecdir=/usr/lib LOCAL_PACKAGE_DIR=$$PWD/debian/toolchain
 
 # we run MAKE directly because dh_auto_install runs make in dry-run to
 # check for the build system, and this breaks gcc generated includes

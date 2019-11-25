@@ -24,7 +24,12 @@ DEB_VERSION=${UPSTREAM_VERSION}~${DATE}.${SHORTHASH}
 dch -D ${DISTRIB} -v ${DEB_VERSION}-1 -U "Nightly build from tag ${LONGHASH}"
 git archive --format=tar --prefix=${PROJECT}-${DEB_VERSION}/ origin/master | gzip -c > ${PROJECT}_${DEB_VERSION}.orig.tar.gz
 tar xf ${PROJECT}_${DEB_VERSION}.orig.tar.gz
+# download the external toolchain tarballs and prepare ./debian
+cd debian
+make -f ../${PROJECT}-${DEB_VERSION}/Makefile download-toolchain
+find toolchain/ -name '*.tar.*' | awk '{print "debian/"$0}' > source/include-binaries
+cd ..
 cd ${PROJECT}-${DEB_VERSION}
 cp -a ../debian .
 yes | mk-build-deps --install --remove
-dpkg-buildpackage -rfakeroot ${BUILD_OPTS} ${SIGN_FLAGS}
+dpkg-buildpackage -rfakeroot --source-option="--include-binaries" ${BUILD_OPTS} ${SIGN_FLAGS}
