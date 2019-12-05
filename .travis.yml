@@ -1,0 +1,39 @@
+language: c
+dist: bionic
+matrix:
+  include:
+    - name: "Linux"
+      os: linux
+      dist: bionic
+      addons:
+        apt:
+          packages:
+            - pkg-config
+            - gcc
+            - g++
+            - flex
+            - bison
+            - gawk
+            - gettext
+            - bzip2
+            - lzma
+            - xz-utils
+            - libboost-dev
+            - libexpat1-dev
+            - libgc-dev
+            - libgmp-dev
+            - zlib1g-dev
+            - libipt-dev
+            - libmpc-dev
+            - libmpfr-dev
+            - libncurses5-dev
+            - libreadline-dev
+            - texinfo
+      env:
+      - PREFIX="/usr"
+      - GNU_MIRROR="https://mirror.checkdomain.de/gnu"
+      - NEWLIB_MIRROR="https://ftp.gwdg.de/pub/linux/sources.redhat.com"
+
+script:
+  - make -s all prefix=$PREFIX GNU_MIRROR=$GNU_MIRROR NEWLIB_MIRROR=$NEWLIB_MIRROR
+  - sudo make -s install prefix=$PREFIX
