@@ -19,17 +19,20 @@ fi
 PROJECT=ngdevkit-toolchain
 UPSTREAM_VERSION=$(git grep VERSION origin/master:Makefile | sed -ne 's/.*=\(.*\)$/\1/p')
 read DATE SHORTHASH LONGHASH <<<$(git log -1 --date=format:"%Y%m%d%H%M" --pretty=format:"%cd %h %H" origin/master)
-DEB_VERSION=${UPSTREAM_VERSION}~${DATE}.${SHORTHASH}
+UPSTREAM_HASH=${DATE}.${SHORTHASH}
+TARBALL_VERSION=${UPSTREAM_VERSION}~${UPSTREAM_HASH}
+BUILD_INFO=${DISTRIB}.1
+DEB_VERSION=${TARBALL_VERSION}-${BUILD_INFO}
 
-dch -D ${DISTRIB} -v ${DEB_VERSION}-1 -U "Nightly build from tag ${LONGHASH}"
-git archive --format=tar --prefix=${PROJECT}-${DEB_VERSION}/ origin/master | gzip -c > ${PROJECT}_${DEB_VERSION}.orig.tar.gz
-tar xf ${PROJECT}_${DEB_VERSION}.orig.tar.gz
+dch -D ${DISTRIB} -v ${DEB_VERSION} -U "Nightly build from tag ${LONGHASH}"
+git archive --format=tar --prefix=${PROJECT}-${TARBALL_VERSION}/ origin/master | gzip -nc > ${PROJECT}_${TARBALL_VERSION}.orig.tar.gz
+tar xf ${PROJECT}_${TARBALL_VERSION}.orig.tar.gz
 # download the external toolchain tarballs and prepare ./debian
 cd debian
-make -f ../${PROJECT}-${DEB_VERSION}/Makefile download-toolchain
+make -f ../${PROJECT}-${TARBALL_VERSION}/Makefile download-toolchain
 find toolchain/ -name '*.tar.*' | awk '{print "debian/"$0}' > source/include-binaries
 cd ..
-cd ${PROJECT}-${DEB_VERSION}
+cd ${PROJECT}-${TARBALL_VERSION}
 cp -a ../debian .
 yes | mk-build-deps --install --remove
 dpkg-buildpackage -rfakeroot --source-option="--include-binaries" ${BUILD_OPTS} ${SIGN_FLAGS}
