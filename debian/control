@@ -3,8 +3,7 @@ Section: contrib/devel
 Priority: optional
 Maintainer: Damien Ciabrini <damien.ciabrini@gmail.com>
 Build-Depends: debhelper (>= 10),
-  make, autoconf, automake, pkg-config,
-  gcc, g++, flex, bison, gawk, gettext,
+  autoconf, automake, pkg-config, flex, bison, gawk, gettext,
   bzip2, lzma, xz-utils,
   libboost-dev, libexpat1-dev, libgc-dev, libgmp-dev, zlib1g-dev,
   libipt-dev, libmpc-dev, libmpfr-dev, libncurses5-dev, libreadline-dev,
