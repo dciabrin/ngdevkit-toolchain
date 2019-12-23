@@ -37,7 +37,7 @@ LOCAL_PACKAGE_DIR=
 SRC_BINUTILS=binutils-2.32
 SRC_GCC=gcc-5.5.0
 SRC_NEWLIB=newlib-1.14.0
-SRC_GDB=gdb-7.8.2
+SRC_GDB=gdb-8.3.1
 SRC_SDCC=sdcc-src-3.7.0
 
 TOOLCHAIN=ngbinutils nggcc ngnewlib ngsdcc nggdb
@@ -53,7 +53,7 @@ download-toolchain: \
 	toolchain/$(SRC_BINUTILS).tar.bz2 \
 	toolchain/$(SRC_GCC).tar.xz \
 	toolchain/$(SRC_NEWLIB).tar.gz \
-	toolchain/$(SRC_GDB).tar.gz \
+	toolchain/$(SRC_GDB).tar.xz \
 	toolchain/$(SRC_SDCC).tar.bz2
 
 unpack-toolchain: \
@@ -80,7 +80,7 @@ toolchain/$(SRC_GCC).tar.xz:
 toolchain/$(SRC_NEWLIB).tar.gz:
 	curl -L $(NEWLIB_MIRROR)/newlib/$(notdir $@) -o $@
 
-toolchain/$(SRC_GDB).tar.gz:
+toolchain/$(SRC_GDB).tar.xz:
 	curl -L $(GNU_MIRROR)/gdb/$(notdir $@) -o $@
 
 toolchain/$(SRC_SDCC).tar.bz2:
@@ -89,7 +89,7 @@ else
 toolchain/$(SRC_BINUTILS).tar.bz2 \
 toolchain/$(SRC_GCC).tar.xz \
 toolchain/$(SRC_NEWLIB).tar.gz \
-toolchain/$(SRC_GDB).tar.gz \
+toolchain/$(SRC_GDB).tar.xz \
 toolchain/$(SRC_SDCC).tar.bz2:
 	cp $(LOCAL_PACKAGE_DIR)/$(notdir $@) $@
 endif
@@ -98,7 +98,7 @@ endif
 toolchain/$(SRC_BINUTILS): toolchain/$(SRC_BINUTILS).tar.bz2
 toolchain/$(SRC_GCC): toolchain/$(SRC_GCC).tar.xz
 toolchain/$(SRC_NEWLIB): toolchain/$(SRC_NEWLIB).tar.gz
-toolchain/$(SRC_GDB): toolchain/$(SRC_GDB).tar.gz
+toolchain/$(SRC_GDB): toolchain/$(SRC_GDB).tar.xz
 toolchain/sdcc: toolchain/$(SRC_SDCC).tar.bz2
 
 
