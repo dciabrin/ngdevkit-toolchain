@@ -1,6 +1,13 @@
 language: c
 dist: bionic
 
+# Do not run on tag creation (e.g. skip tag created for nightly builds)
+if: tag IS blank
+
+env:
+  global:
+    - secure: "cdxOA3lSvISkk0Zhx2uw4QWK4bFXS/05Fq4if1lbQCTLun5sqUzjlbqOZTKxg/g4q4inQTt8xAf0PfIylOQ1jKZM61SqHeKPBlwo+fx7TjUSFy2FZHQKFOejcwN+pFrqB4yoV5E+KC5mzHrz32RMx8cV6ult9iFH5SigDodejbxo25XyFvZGZlj305/gMEZvN2vO8dNVdqOuObdJEoD5jzIR4IPuew76SqbV9no9n/kMhdVMu23SFe3bKgWqHuoJUwc/cjqpoVnrlHITflnCeS5+HWdDOMHBePc1ceLkhiZXrTfRQ7FMlrIAYf6j6iHWrAKqOC4aS1j5V/m+yXU9vQDGu2H7qWkGS1b52aSQB0YxX93De4xAmrd332aht0RrsPDuD0k/Y7Jz3fUwfHGmJ51f47V384h9TB8I1E2qBQjb2njzCb+HJ6AHLeB/D9kGdHV3GmSVoU1wWOllUa7Ta6rfYaHBqrDH0KwS1fVo494eYHYmpfs5BqeHPHGYp4BzL4B100vhmBJPVZkah5nQjHWOYd7uMTXMvD6dW1X7YUvEdHrmVvqQFq6gSLklH6fzKRPSWkwR13w1+YdykMiq6uC/gbkdxPAryi/72znJK0ciYGFHXifWmiZ+L4hK/Xwt5XIuarw9W/P+n2BxNBfJcyYrlZu/Mu463iuV8NO0VsE="
+
 jobs:
   include:
     - stage: Tests
@@ -37,7 +44,7 @@ jobs:
       - NEWLIB_MIRROR="https://ftp.gwdg.de/pub/linux/sources.redhat.com"
 
     - stage: Daily packages
-      if: branch = master
+      if: type = push AND branch = master
       name: Launchpad - deb
       script: skip
       deploy:
@@ -47,6 +54,24 @@ jobs:
           secure: "F9bBt0VNDJQ7M0sc4s1pvYq+1bUjThO3m5ipKInWE9L6dJvH1AD2yzdq3zBtcyOzsTVfFGXpzDH5PZEHhYorLpdLa2OiF9IxCccoEEA1mfI4VVjHg9c3gmcfDjH/NpEFHU1XBt0/l+2qgc2M7ooCNjwS4Uq4Lm9dLLHflyZ8ZF4bX239J0LLSrVC4BO7cCpKQUC14nvaD0+uzEvzyHtOfRGR6o9f0mOOaq+kpiD/+DfePLdU9/chLx/mPvDViiiCV0HBi8xhQBwwCGMtUU5SafygaescnjxtNN77t33OlbWQTQKtWWXfLmSTsL1B7gQlImZ33rZB2nPzr/j5n0DFdMzgGfZ/c1zzprUmSRm6XCxBDp1qYm6n3ETaxZKk30OG/cLrQd8yo3BfK4TuUKi0QEel7tn9lVC5cq1rn2KgL35vItHf15ESCSMxy9topQpUBl6vBY1KYg4UhotWodsGym4p769ImQk64uxLSFQgRSE4SC3GpMh9DHM7rglBqM3byBKKs04FFu15f+p7LFQmtkeD7MKUK9BL2PNw7WOxhGqsDhINGETWb5oTi1JemIsfhgFzXefr+5AxcRkJMrdkVypYHZEqtzV+vcyn5UB6GIcWTLIQiuEQfjMuDOdnXv3XyoQl7M3aIzNc5PZ5XU6MZQMBpGaJg05enQDupjimjRc="
         oauth_token_secret:
           secure: "cfBul/Ga1sWaBTkbVj0oVxsVb7NcKQAYaDzQrxkFUPo6GMFqrh+bJotb+RFSkQvG+EJ2lvF/+CwvnAAr43YxBh277vCqa9M8D5hUlvcZ74ogn6sGuGXaWuj297JXt6um6f/66/NpqTT6nmK7h/XiYA9GPSEhVk33lRrLv1d7WGvnnoVZ6BDWOImWptjjT5ax8SU3fDs1sqrh77+gaUMtiHZhQdZmjgpsSn3dhbSpw2EJaVtn/B3Sp/Tk4b44T2XQTiJDWDlbfO3sJEqgHRNBzWkpdEfymxWsrNGOTJPZ4Q6OdGPM1lHrh3FjHWLBbvjTkKsGwMhMvgAFGD3nDbeaFwGHJ50Zamxdp0S1uRxChgrVHCMSnEKX6mEs9PQU5Q2rywg7cjUoamE6X7fweoTTvMtKB8Rr7Qsx0lMRpG3+dsjFvFLAtBYPi94fIVQV+q9L386x5i4x2UJ5tH4W1GW3mZ/aZZ2jldhM3AGHIGcglt2WYby5jR51r/4ZZwLKKZBQx3HMVSNnEVIFvm2MYtguN/9z6s4o/5St8vaeSe4Pdhp6JtcslR2eLDvOcI0ucwLT/olvrKfJZUodAZpBrRAUDLIv8jjeUAdnzm62cQpFlv8Ki7Y/Ewb1IRRxcxxoQouVyfo+giz6xL/43SDoHsqpRU7Dp/FDXN8nLA0hdlVvzJc="
+
+    - name: Homebrew - bottle
+      if: type = push AND branch = master
+      script:
+        - git config --global user.name 'CI build bot'
+        - git config --global user.email '<>'
+        - git config --global url."https://api@github.com/".insteadOf "https://github.com/"
+        - git clone https://github.com/dciabrin/homebrew-ngdevkit .travis/homebrew-ngdevkit
+        - .travis/homebrew-ngdevkit/.travis/bump-project-nightly-build.sh ngdevkit-toolchain
+
+    - stage: Post-deploy
+      name: Clean up old nightly tags
+      addons:
+        apt:
+          packages:
+            - jq
+      script: .travis/gc-nightly-tags.sh --tag-regex='^refs/tags/nightly-[0-9]*'
+      if: type = push AND branch = master
 
 script:
   - make -s all prefix=$PREFIX GNU_MIRROR=$GNU_MIRROR NEWLIB_MIRROR=$NEWLIB_MIRROR
