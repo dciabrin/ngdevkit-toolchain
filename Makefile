@@ -36,7 +36,7 @@ LOCAL_PACKAGE_DIR=
 # Version of external dependencies
 SRC_BINUTILS=binutils-2.32
 SRC_GCC=gcc-5.5.0
-SRC_NEWLIB=newlib-1.14.0
+SRC_NEWLIB=newlib-4.0.0
 SRC_GDB=gdb-8.3.1
 SRC_SDCC=sdcc-src-3.7.0
 
@@ -181,7 +181,7 @@ $(BUILD)/ngnewlib: $(BUILD)/nggcc toolchain/$(SRC_NEWLIB)
 	RANLIB_FOR_TARGET=$$PWD/../ngbinutils/binutils/ranlib \
 	READELF_FOR_TARGET=$$PWD/../ngbinutils/binutils/readelf \
 	STRIP_FOR_TARGET=$$PWD/../ngbinutils/binutils/strip-new \
-	$$CURPWD/toolchain/newlib-1.14.0/configure \
+	$$CURPWD/toolchain/newlib-4.0.0/configure \
 	--prefix=$(prefix) \
 	--libexecdir=$(prefix)/m68k-neogeo-elf/lib \
 	--infodir=$(prefix)/m68k-neogeo-elf/info \
@@ -189,6 +189,17 @@ $(BUILD)/ngnewlib: $(BUILD)/nggcc toolchain/$(SRC_NEWLIB)
 	--bindir=$(prefix)/bin \
 	--enable-target-optspace=yes \
 	--enable-newlib-multithread=no \
+	--enable-newlib-reent-small \
+	--disable-newlib-reent-check-verify \
+	--disable-newlib-fvwrite-in-streamio \
+	--disable-newlib-fseek-optimization \
+	--disable-newlib-wide-orient \
+	--enable-newlib-nano-malloc \
+	--disable-newlib-unbuf-stream-opt \
+	--enable-lite-exit \
+	--enable-newlib-global-atexit \
+	--enable-newlib-nano-formatted-io \
+	--disable-nls \
 	-v && $(MAKE)
 
 $(BUILD)/nggdb: toolchain/$(SRC_BINUTILS) toolchain/$(SRC_GDB)
