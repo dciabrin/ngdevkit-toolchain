@@ -1,0 +1,26 @@
+name: Build and Test
+on:
+  push:
+    branches-ignore:
+      - 'master'
+jobs:
+  linux:
+    name: Linux build
+    runs-on: ubuntu-latest
+    env:
+      PREFIX: "/usr"
+      GNU_MIRROR: "https://mirror.checkdomain.de/gnu"
+      NEWLIB_MIRROR: "https://ftp.gwdg.de/pub/linux/sources.redhat.com"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Dependencies
+        run: >
+          sudo apt-get install pkg-config gcc g++ flex bison gawk
+          gettext bzip2 lzma xz-utils libboost-dev libexpat1-dev
+          libgc-dev libgmp-dev zlib1g-dev libipt-dev libmpc-dev
+          libmpfr-dev libncurses5-dev libreadline-dev texinfo
+
+      - name: Build
+        run: ./.github/scripts/build.sh
