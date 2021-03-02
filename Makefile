@@ -209,6 +209,9 @@ $(BUILD)/nggdb: toolchain/$(SRC_BINUTILS) toolchain/$(SRC_GDB)
 	cd $(BUILD)/nggdb && \
 	echo "replacing old texi2pod.pl (causes errors with recent perl)" && \
 	cp $$CURPWD/toolchain/$(SRC_BINUTILS)/etc/texi2pod.pl $$CURPWD/toolchain/$(SRC_GDB)/etc/texi2pod.pl && \
+	CFLAGS="$$CFLAGS -Wno-implicit-function-declaration" \
+	CXXFLAGS="$$CXXFLAGS -Wno-implicit-function-declaration" \
+	CPPFLAGS="$$CPPFLAGS -Wno-implicit-function-declaration" \
 	$$CURPWD/toolchain/$(SRC_GDB)/configure \
 	--prefix=$(prefix) \
 	--exec-prefix=$(prefix)/m68k-neogeo-elf \

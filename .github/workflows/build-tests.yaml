@@ -4,11 +4,32 @@ on:
     branches-ignore:
       - 'master'
 jobs:
+  # linux:
+  #   name: "Linux build"
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     PREFIX: "/usr"
+  #     GNU_MIRROR: "https://mirror.checkdomain.de/gnu"
+  #     NEWLIB_MIRROR: "https://ftp.gwdg.de/pub/linux/sources.redhat.com"
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+
+  #     - name: Dependencies
+  #       run: >
+  #         sudo apt-get install pkg-config gcc g++ flex bison gawk
+  #         gettext bzip2 lzma xz-utils libboost-dev libexpat1-dev
+  #         libgc-dev libgmp-dev zlib1g-dev libipt-dev libmpc-dev
+  #         libmpfr-dev libncurses5-dev libreadline-dev texinfo
+
+  #     - name: Build
+  #       run: ./.github/scripts/build.sh
+
   linux:
-    name: Linux build
-    runs-on: ubuntu-latest
+    name: "macOS build"
+    runs-on: macos-latest
     env:
-      PREFIX: "/usr"
+      PREFIX: "/usr/local"
       GNU_MIRROR: "https://mirror.checkdomain.de/gnu"
       NEWLIB_MIRROR: "https://ftp.gwdg.de/pub/linux/sources.redhat.com"
     steps:
@@ -16,11 +37,12 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Dependencies
-        run: >
-          sudo apt-get install pkg-config gcc g++ flex bison gawk
-          gettext bzip2 lzma xz-utils libboost-dev libexpat1-dev
-          libgc-dev libgmp-dev zlib1g-dev libipt-dev libmpc-dev
-          libmpfr-dev libncurses5-dev libreadline-dev texinfo
+        run: |
+          brew install make autoconf-archive python3
+          brew deps gcc | xargs brew install
+          brew deps sdcc | xargs brew install
 
       - name: Build
-        run: ./.github/scripts/build.sh
+        run: |
+          export PATH="/usr/local/opt/make/libexec/gnubin:$PATH"
+          ./.github/scripts/build.sh
