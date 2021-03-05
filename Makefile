@@ -33,6 +33,9 @@ NEWLIB_MIRROR=ftp://sourceware.org/pub
 # Local copy of the toolchain packages to skip download
 LOCAL_PACKAGE_DIR=
 
+# SDCC: extra commands tu run during configure && make
+EXTRA_BUILD_CMD_SDCC=true
+
 # Version of external dependencies
 SRC_BINUTILS=binutils-2.32
 SRC_GCC=gcc-5.5.0
@@ -227,6 +230,7 @@ $(BUILD)/ngsdcc: toolchain/sdcc
 	@echo compiling sdcc...
 	CURPWD=$$(pwd) && \
 	unset CPPFLAGS && \
+	$(EXTRA_BUILD_CMD_SDCC) && \
 	mkdir -p $(BUILD)/ngsdcc && \
 	cd $(BUILD)/ngsdcc && \
 	include_dir_suffix=include \
@@ -237,6 +241,7 @@ $(BUILD)/ngsdcc: toolchain/sdcc
 	--libexecdir=$(prefix)/z80-neogeo-ihx/lib \
 	--datarootdir=$(prefix)/z80-neogeo-ihx \
 	--disable-non-free \
+	--disable-ucsim \
 	--enable-z80-port \
 	--disable-pic14-port \
 	--disable-pic16-port \
