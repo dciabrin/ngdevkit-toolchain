@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Damien Ciabrini
+# Copyright (c) 2019-2021 Damien Ciabrini
 # This file is part of ngdevkit
 #
 # ngdevkit is free software: you can redistribute it and/or modify
@@ -33,14 +33,15 @@ NEWLIB_MIRROR=ftp://sourceware.org/pub
 # Local copy of the toolchain packages to skip download
 LOCAL_PACKAGE_DIR=
 
-# SDCC: extra commands tu run during configure && make
-EXTRA_BUILD_CMD_SDCC=true
+# Extra commands to run during "configure && make"
+# For platform-specific configuration
+EXTRA_BUILD_CMD=true
 
 # Version of external dependencies
 SRC_BINUTILS=binutils-2.32
 SRC_GCC=gcc-5.5.0
 SRC_NEWLIB=newlib-4.0.0
-SRC_GDB=gdb-8.3.1
+SRC_GDB=gdb-9.2
 SRC_SDCC=sdcc-src-3.7.0
 
 TOOLCHAIN=ngbinutils nggcc ngnewlib ngsdcc nggdb
@@ -110,6 +111,7 @@ build-toolchain: $(TOOLCHAIN:%=$(BUILD)/%)
 $(BUILD)/ngbinutils: toolchain/$(SRC_BINUTILS)
 	@echo compiling binutils...
 	CURPWD=$$(pwd) && \
+	$(EXTRA_BUILD_CMD) && \
 	mkdir -p $(BUILD)/ngbinutils && \
 	cd $(BUILD)/ngbinutils && \
 	sed -i -e 's/\(@item\) \(How GNU properties are merged.\)/\1'$$'\\\n''\2/' $$CURPWD/toolchain/binutils-2.32/ld/ld.texi  && \
@@ -133,6 +135,7 @@ $(BUILD)/ngbinutils: toolchain/$(SRC_BINUTILS)
 $(BUILD)/nggcc: $(BUILD)/ngbinutils toolchain/$(SRC_GCC)
 	@echo compiling gcc...
 	CURPWD=$$(pwd) && \
+	$(EXTRA_BUILD_CMD) && \
 	mkdir -p $(BUILD)/nggcc && \
 	cd $(BUILD)/nggcc && \
 	echo "replacing old texi2pod.pl (causes errors with recent perl)" && \
@@ -148,7 +151,7 @@ $(BUILD)/nggcc: $(BUILD)/ngbinutils toolchain/$(SRC_GCC)
 	STRIP_FOR_TARGET=$$PWD/../ngbinutils/binutils/strip-new \
 	CFLAGS="$$CFLAGS -Wno-format-security" \
 	CXXFLAGS="$$CXXFLAGS -Wno-format-security" \
-	$$CURPWD/toolchain/gcc-5.5.0/configure \
+	$$CURPWD/toolchain/$(SRC_GCC)/configure \
 	--target=m68k-neogeo-elf \
 	--prefix=$(prefix) \
 	--exec-prefix=$(prefix)/m68k-neogeo-elf \
@@ -157,6 +160,7 @@ $(BUILD)/nggcc: $(BUILD)/ngbinutils toolchain/$(SRC_GCC)
 	--datadir=$(prefix)/m68k-neogeo-elf/lib \
 	--includedir=$(prefix)/m68k-neogeo-elf/include \
 	--bindir=$(prefix)/bin \
+	--src=$$(realpath $$CURPWD/toolchain/$(SRC_GCC) --relative-to $$PWD) \
 	--with-system-zlib \
 	--with-cpu=m68000 \
 	--with-threads=single \
@@ -172,6 +176,7 @@ $(BUILD)/nggcc: $(BUILD)/ngbinutils toolchain/$(SRC_GCC)
 $(BUILD)/ngnewlib: $(BUILD)/nggcc toolchain/$(SRC_NEWLIB)
 	@echo compiling newlib...
 	CURPWD=$$(pwd) && \
+	$(EXTRA_BUILD_CMD) && \
 	mkdir -p $(BUILD)/ngnewlib && \
 	cd $(BUILD)/ngnewlib && \
 	CC_FOR_TARGET="$$PWD/../nggcc/gcc/gcc-cross -B$$PWD/../nggcc/gcc" \
@@ -208,12 +213,13 @@ $(BUILD)/ngnewlib: $(BUILD)/nggcc toolchain/$(SRC_NEWLIB)
 $(BUILD)/nggdb: toolchain/$(SRC_BINUTILS) toolchain/$(SRC_GDB)
 	@echo compiling gdb...
 	CURPWD=$$(pwd) && \
+	$(EXTRA_BUILD_CMD) && \
 	mkdir -p $(BUILD)/nggdb && \
 	cd $(BUILD)/nggdb && \
 	echo "replacing old texi2pod.pl (causes errors with recent perl)" && \
 	cp $$CURPWD/toolchain/$(SRC_BINUTILS)/etc/texi2pod.pl $$CURPWD/toolchain/$(SRC_GDB)/etc/texi2pod.pl && \
 	CFLAGS="$$CFLAGS -Wno-implicit-function-declaration" \
-	CXXFLAGS="$$CXXFLAGS -Wno-implicit-function-declaration" \
+	CXXFLAGS="$$CXXFLAGS" \
 	CPPFLAGS="$$CPPFLAGS -Wno-implicit-function-declaration" \
 	$$CURPWD/toolchain/$(SRC_GDB)/configure \
 	--prefix=$(prefix) \
@@ -224,13 +230,14 @@ $(BUILD)/nggdb: toolchain/$(SRC_BINUTILS) toolchain/$(SRC_GDB)
 	--includedir=$(prefix)/m68k-neogeo-elf/include \
 	--bindir=$(prefix)/bin \
 	--target=m68k-neogeo-elf \
+	--with-system-readline \
 	-v && $(MAKE)
 
 $(BUILD)/ngsdcc: toolchain/sdcc
 	@echo compiling sdcc...
 	CURPWD=$$(pwd) && \
 	unset CPPFLAGS && \
-	$(EXTRA_BUILD_CMD_SDCC) && \
+	$(EXTRA_BUILD_CMD) && \
 	mkdir -p $(BUILD)/ngsdcc && \
 	cd $(BUILD)/ngsdcc && \
 	include_dir_suffix=include \
@@ -262,19 +269,19 @@ $(BUILD)/ngsdcc: toolchain/sdcc
 install: $(TOOLCHAIN:%=install-%)
 
 install-ngbinutils: $(BUILD)/ngbinutils
-	$(MAKE) -C $(BUILD)/ngbinutils install
+	$(EXTRA_BUILD_CMD) && $(MAKE) -C $(BUILD)/ngbinutils install
 
 install-nggcc: $(BUILD)/nggcc
-	$(MAKE) -C $(BUILD)/nggcc install build_tooldir=$(prefix)/m68k-neogeo-elf --eval 'override toolexecdir = $$(exec_prefix)' --eval 'override build_tooldir = '$(prefix)'/m68k-neogeo-elf'
+	$(EXTRA_BUILD_CMD) && $(MAKE) -C $(BUILD)/nggcc install build_tooldir=$(prefix)/m68k-neogeo-elf --eval 'override toolexecdir = $$(exec_prefix)' --eval 'override build_tooldir = '$(prefix)'/m68k-neogeo-elf'
 
 install-ngnewlib: $(BUILD)/ngnewlib
-	$(MAKE) -C $(BUILD)/ngnewlib install
+	$(EXTRA_BUILD_CMD) && $(MAKE) -C $(BUILD)/ngnewlib install
 
 install-nggdb: $(BUILD)/nggdb
-	$(MAKE) -C $(BUILD)/nggdb install --eval 'override gnulocaledir = $$(localedir)'
+	$(EXTRA_BUILD_CMD) && $(MAKE) -C $(BUILD)/nggdb install --eval 'override gnulocaledir = $$(localedir)'
 
 install-ngsdcc: $(BUILD)/ngsdcc
-	$(MAKE) -C $(BUILD)/ngsdcc install DESTDIR=$(DESTDIR) && \
+	$(EXTRA_BUILD_CMD) && $(MAKE) -C $(BUILD)/ngsdcc install DESTDIR=$(DESTDIR) && \
 	rm -rf $(DESTDIR)$(prefix)/z80-neogeo-ihx/lib/src && \
 	find $(DESTDIR)$(prefix)/z80-neogeo-ihx/lib/ -type d -empty -delete
 
