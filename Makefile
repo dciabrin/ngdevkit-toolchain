@@ -36,6 +36,7 @@ LOCAL_PACKAGE_DIR=
 # Extra commands to run during "configure && make"
 # For platform-specific configuration
 EXTRA_BUILD_CMD=true
+EXTRA_BUILD_FLAGS=
 
 # Version of external dependencies
 SRC_BINUTILS=binutils-2.32
@@ -116,6 +117,7 @@ $(BUILD)/ngbinutils: toolchain/$(SRC_BINUTILS)
 	cd $(BUILD)/ngbinutils && \
 	sed -i -e 's/\(@item\) \(How GNU properties are merged.\)/\1'$$'\\\n''\2/' $$CURPWD/toolchain/binutils-2.32/ld/ld.texi  && \
 	$$CURPWD/toolchain/$(SRC_BINUTILS)/configure \
+	$(EXTRA_BUILD_FLAGS) \
 	--target=m68k-neogeo-elf \
 	--prefix=$(prefix) \
 	--exec-prefix=$(prefix) \
@@ -152,6 +154,7 @@ $(BUILD)/nggcc: $(BUILD)/ngbinutils toolchain/$(SRC_GCC)
 	CFLAGS="$$CFLAGS -Wno-format-security" \
 	CXXFLAGS="$$CXXFLAGS -Wno-format-security" \
 	$$CURPWD/toolchain/$(SRC_GCC)/configure \
+	$(EXTRA_BUILD_FLAGS) \
 	--target=m68k-neogeo-elf \
 	--prefix=$(prefix) \
 	--exec-prefix=$(prefix)/m68k-neogeo-elf \
@@ -190,6 +193,7 @@ $(BUILD)/ngnewlib: $(BUILD)/nggcc toolchain/$(SRC_NEWLIB)
 	READELF_FOR_TARGET=$$PWD/../ngbinutils/binutils/readelf \
 	STRIP_FOR_TARGET=$$PWD/../ngbinutils/binutils/strip-new \
 	$$CURPWD/toolchain/newlib-4.0.0/configure \
+	$(EXTRA_BUILD_FLAGS) \
 	--prefix=$(prefix) \
 	--libexecdir=$(prefix)/m68k-neogeo-elf/lib \
 	--infodir=$(prefix)/m68k-neogeo-elf/info \
@@ -222,6 +226,7 @@ $(BUILD)/nggdb: toolchain/$(SRC_BINUTILS) toolchain/$(SRC_GDB)
 	CXXFLAGS="$$CXXFLAGS" \
 	CPPFLAGS="$$CPPFLAGS -Wno-implicit-function-declaration" \
 	$$CURPWD/toolchain/$(SRC_GDB)/configure \
+	$(EXTRA_BUILD_FLAGS) \
 	--prefix=$(prefix) \
 	--exec-prefix=$(prefix)/m68k-neogeo-elf \
 	--libexecdir=$(prefix)/m68k-neogeo-elf/lib \
@@ -243,6 +248,7 @@ $(BUILD)/ngsdcc: toolchain/sdcc
 	include_dir_suffix=include \
 	lib_dir_suffix=lib \
 	$$CURPWD/toolchain/sdcc/configure \
+	$(EXTRA_BUILD_FLAGS) \
 	--program-prefix=z80-neogeo-ihx- \
 	--prefix=$(prefix) \
 	--libexecdir=$(prefix)/z80-neogeo-ihx/lib \
