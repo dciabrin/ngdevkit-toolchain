@@ -59,6 +59,34 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
+  deploy_msys2:
+    name: "msys2: trigger package rebuild"
+    needs: linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: "MSYS2: push new nightly revision and rebuild package repository"
+        run: |
+          git config --global user.name 'CI build bot'
+          git config --global user.email '<>'
+          git config --global url."https://api@github.com/".insteadOf "https://github.com/"
+          git clone https://github.com/dciabrin/msys2-ngdevkit .ci/msys2-ngdevkit
+          .ci/msys2-ngdevkit/.ci/bump-project-nightly-build.sh ngdevkit-toolchain
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+  cleanup_tags:
+    name: "Cleanup tags and artefacts"
+    runs-on: ubuntu-latest
+    needs: [deploy_deb, deploy_brew, deploy_msys2]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: "Cleanup old nightly tags"
         run: .ci/gc-nightly-tags.sh --user=dciabrin --repo=ngdevkit-toolchain --tag-regex='^refs/tags/nightly-[0-9]*'
         env:
