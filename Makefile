@@ -152,7 +152,7 @@ $(BUILD)/nggcc: $(BUILD)/ngbinutils toolchain/$(SRC_GCC)
 	READELF_FOR_TARGET=$$PWD/../ngbinutils/binutils/readelf \
 	STRIP_FOR_TARGET=$$PWD/../ngbinutils/binutils/strip-new \
 	CFLAGS="$$CFLAGS -Wno-format-security" \
-	CXXFLAGS="$$CXXFLAGS -Wno-format-security" \
+	CXXFLAGS="$$CXXFLAGS -std=c++14 -Wno-format-security" \
 	$$CURPWD/toolchain/$(SRC_GCC)/configure \
 	$(EXTRA_BUILD_FLAGS) \
 	--target=m68k-neogeo-elf \
