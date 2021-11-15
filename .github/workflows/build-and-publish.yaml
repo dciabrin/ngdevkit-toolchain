@@ -41,7 +41,7 @@ jobs:
 
   deploy_rpm:
     name: "rpm: trigger COPR rebuild"
-    needs: [linux, wincross, win, macos]
+    needs: linux
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
