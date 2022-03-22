@@ -47,6 +47,64 @@ SRC_SDCC=sdcc-src-3.7.0
 
 TOOLCHAIN=ngbinutils nggcc ngnewlib ngsdcc nggdb
 
+# GCC: compilation flags to support all compilers / OS
+#
+# Note: building gcc 5.x with clang 13 and gcc 11 requires
+# various flags to disable new checks that are enabled by
+# default and make the compilation fail due to the gcc 5.x
+# codebase being rather old at this point...
+#
+# -Wno-narrowing: tree-object-size.c:73:65: error: narrowing conversion of ‘-1’ from ‘int’ to ‘long unsigned int’
+# -DHAVE_DESIGNATED_UNION_INITIALIZERS: recog.h:357:5: warning: macro expansion producing 'defined' has undefined behavior
+# --std=c++98: diagnostic-core.h:67:13: note: candidate function not viable: no known conversion from 'source_location' (aka 'unsigned int') to 'const char *' for 1st argument
+# --std=gnu++14: reload1.c:115:24: error: use of an operand of type ‘bool’ in ‘operator++’ is forbidden in C++17
+# --std=gnu++14: m68k.c:1781:7: error: ISO C++17 does not allow 'register' storage class specifier
+# --std=gnu++14: build/gencondmd: Undefined symbols for architecture x86_64
+# -Wno-reserved-user-defined-literal: defaults.h:126:27: error: invalid suffix on literal; C++11 requires a space between literal and identifier
+#
+# The other options are just there to silent warnings
+#
+GCC_C_BUILD_FLAGS=\
+-Wno-strict-prototypes -Wno-implicit-function-declaration \
+-Wno-old-style-definition -Wno-missing-prototypes -Wimplicit-fallthrough=0 \
+-Wno-unknown-warning-option
+GCC_CXX_BUILD_FLAGS=\
+-Wno-narrowing \
+-DHAVE_DESIGNATED_UNION_INITIALIZERS \
+-Wno-reserved-user-defined-literal
+GCC_CXX_BUILD_FLAGS+= \
+-Wno-array-bounds -Wno-deprecated  \
+-Wno-format-security -Wno-string-compare -Wno-shift-negative-value \
+-Wno-invalid-offsetof -Wno-ignored-attributes \
+-Wno-literal-suffix -Wno-unknown-warning-option \
+-Wno-enum-compare-switch
+GCC_GMAKE_OVERRIDES= \
+--eval 'override GCC_WARN_CFLAGS = ' \
+--eval 'override GCC_WARN_CXXFLAGS = ' \
+--eval 'override WARN_CFLAGS = ' \
+--eval 'override WARN_CXXFLAGS = ' \
+--eval 'override CFLAGS-toplev.o = --std=c++98 -DTARGET_NAME=\"m68k-neogeo-elf\"' \
+--eval 'override CFLAGS-reload1.o = --std=gnu++14' \
+--eval 'override CFLAGS-m68k.o = --std=gnu++14' \
+--eval 'override CFLAGS-build/gencondmd.o = --std=gnu++14'
+
+# GDB: compilation flags to support all compilers / OS
+GDB_C_BUILD_FLAGS=\
+-Wno-deprecated-declarations -Wno-incompatible-library-redeclaration \
+-Wno-visibility -Wno-unused-value -Wno-unknown-warning-option \
+-Wno-implicit-function-declaration
+GDB_CXX_BUILD_FLAGS= \
+-Wno-deprecated-copy-dtor
+GDB_LD_BUILD_FLAGS=
+GDB_PKG_CONFIG_PATH=
+
+ifeq ($(shell uname -s),Darwin)
+GDB_C_BUILD_FLAGS+=-I/usr/local/opt/readline/include
+GDB_CXX_BUILD_FLAGS+=-I/usr/local/opt/readline/include
+GDB_LD_BUILD_FLAGS+=-L/usr/local/opt/readline/lib
+GDB_PKG_CONFIG_PATH+=/usr/local/opt/readline/lib/pkgconfig
+endif
+
 
 all: \
 	download-toolchain \
@@ -134,6 +192,7 @@ $(BUILD)/ngbinutils: toolchain/$(SRC_BINUTILS)
 # doing so we break gcc's default search dirs
 # ($PREFIX/lib/gcc/m68k-neogeo-elf/5.5.0/../../../../m68k-neogeo-elf/m68k-neogeo-elf/lib)
 # so we need to tweak build variable prefix_to_exec_prefix
+
 $(BUILD)/nggcc: $(BUILD)/ngbinutils toolchain/$(SRC_GCC)
 	@echo compiling gcc...
 	CURPWD=$$(pwd) && \
@@ -151,8 +210,8 @@ $(BUILD)/nggcc: $(BUILD)/ngbinutils toolchain/$(SRC_GCC)
 	RANLIB_FOR_TARGET=$$PWD/../ngbinutils/binutils/ranlib \
 	READELF_FOR_TARGET=$$PWD/../ngbinutils/binutils/readelf \
 	STRIP_FOR_TARGET=$$PWD/../ngbinutils/binutils/strip-new \
-	CFLAGS="$$CFLAGS -Wno-format-security" \
-	CXXFLAGS="$$CXXFLAGS -std=c++14 -Wno-format-security" \
+	CFLAGS="$(GCC_C_BUILD_FLAGS) $$CFLAGS" \
+	CXXFLAGS="$(GCC_CXX_BUILD_FLAGS) $$CXXFLAGS" \
 	$$CURPWD/toolchain/$(SRC_GCC)/configure \
 	$(EXTRA_BUILD_FLAGS) \
 	--target=m68k-neogeo-elf \
@@ -174,7 +233,7 @@ $(BUILD)/nggcc: $(BUILD)/ngbinutils toolchain/$(SRC_GCC)
 	--disable-multilib \
 	--disable-libssp \
 	--enable-languages=c \
-	-v && $(MAKE) --eval 'override prefix_to_exec_prefix = ' tooldir=$(prefix)/m68k-neogeo-elf build_tooldir=$(prefix)/m68k-neogeo-elf
+	-v && $(MAKE) --eval 'override prefix_to_exec_prefix = ' tooldir=$(prefix)/m68k-neogeo-elf build_tooldir=$(prefix)/m68k-neogeo-elf $(GCC_GMAKE_OVERRIDES)
 
 $(BUILD)/ngnewlib: $(BUILD)/nggcc toolchain/$(SRC_NEWLIB)
 	@echo compiling newlib...
@@ -222,9 +281,11 @@ $(BUILD)/nggdb: toolchain/$(SRC_BINUTILS) toolchain/$(SRC_GDB)
 	cd $(BUILD)/nggdb && \
 	echo "replacing old texi2pod.pl (causes errors with recent perl)" && \
 	cp $$CURPWD/toolchain/$(SRC_BINUTILS)/etc/texi2pod.pl $$CURPWD/toolchain/$(SRC_GDB)/etc/texi2pod.pl && \
-	CFLAGS="$$CFLAGS -Wno-implicit-function-declaration" \
-	CXXFLAGS="$$CXXFLAGS" \
-	CPPFLAGS="$$CPPFLAGS -Wno-implicit-function-declaration" \
+	CFLAGS="$$CFLAGS $(GDB_C_BUILD_FLAGS)" \
+	CPPFLAGS="$$CPPFLAGS $(GDB_C_BUILD_FLAGS)" \
+	CXXFLAGS="$$CXXFLAGS $(GDB_CXX_BUILD_FLAGS)" \
+	LDFLAGS="$$LDFLAGS $(GDB_LD_BUILD_FLAGS)" \
+	PKG_CONFIG_PATH="$$PKG_CONFIG_PATH:$(GDB_PKG_CONFIG_PATH)" \
 	$$CURPWD/toolchain/$(SRC_GDB)/configure \
 	$(EXTRA_BUILD_FLAGS) \
 	--prefix=$(prefix) \
