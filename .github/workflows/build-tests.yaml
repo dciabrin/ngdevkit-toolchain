@@ -24,3 +24,23 @@ jobs:
 
       - name: Build
         run: ./.github/scripts/build.sh
+
+  macos:
+    name: macOS build
+    runs-on: macos-latest
+    env:
+      PREFIX: "/usr/local/ngdevkit"
+      GNU_MIRROR: "https://mirror.checkdomain.de/gnu"
+      NEWLIB_MIRROR: "https://ftp.gwdg.de/pub/linux/sources.redhat.com"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Dependencies
+        run: >
+          brew install autoconf automake bison boost bzip2 coreutils gawk
+          libtool make pkg-config readline texinfo expat flex gettext
+          gmp gnu-sed libmpc mpfr ncurses xz zlib
+
+      - name: Build
+        run: ./.github/scripts/build.sh
