@@ -1,5 +1,10 @@
 #!/usr/bin/make -f
 
+# gdb-9 cannot be built by gcc-11 with -Werror=format-security
+DEB_BUILD_MAINT_OPTIONS= hardening=-format
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/buildflags.mk
+
 %:
 	dh $@
 
