@@ -130,7 +130,8 @@ clean-toolchain:
 	find toolchain -mindepth 1 -maxdepth 1 -not -name README.md -exec rm -rf {} \;
 
 toolchain/%:
-	tar -C toolchain -xmf toolchain/$(notdir $<)
+	tar -C toolchain -xmf toolchain/$(notdir $<) && \
+        cd $@ && for i in `find ../../patches -type f -name '$(shell echo $(notdir $@) | sed "s/-.*//")-*.patch' | sort`; do patch -p1 < $$i; done
 
 
 ifndef LOCAL_PACKAGE_DIR
