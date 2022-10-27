@@ -1,4 +1,4 @@
-# Copyright (c) 2019-2021 Damien Ciabrini
+# Copyright (c) 2019-2022 Damien Ciabrini
 # This file is part of ngdevkit
 #
 # ngdevkit is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@ EXTRA_BUILD_CMD=true
 EXTRA_BUILD_FLAGS=
 
 # Version of external dependencies
-SRC_BINUTILS=binutils-2.32
+SRC_BINUTILS=binutils-2.35.2
 SRC_GCC=gcc-5.5.0
 SRC_NEWLIB=newlib-4.0.0
 SRC_GDB=gdb-9.2
@@ -174,7 +174,7 @@ $(BUILD)/ngbinutils: toolchain/$(SRC_BINUTILS)
 	$(EXTRA_BUILD_CMD) && \
 	mkdir -p $(BUILD)/ngbinutils && \
 	cd $(BUILD)/ngbinutils && \
-	sed -i -e 's/\(@item\) \(How GNU properties are merged.\)/\1'$$'\\\n''\2/' $$CURPWD/toolchain/binutils-2.32/ld/ld.texi  && \
+	sed -i -e 's/\(@item\) \(How GNU properties are merged.\)/\1'$$'\\\n''\2/' $$CURPWD/toolchain/$(SRC_BINUTILS)/ld/ld.texi  && \
 	$$CURPWD/toolchain/$(SRC_BINUTILS)/configure \
 	$(EXTRA_BUILD_FLAGS) \
 	--target=m68k-neogeo-elf \
