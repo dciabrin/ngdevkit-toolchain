@@ -211,8 +211,8 @@ $(BUILD)/nggcc: $(BUILD)/ngbinutils toolchain/$(SRC_GCC)
 	RANLIB_FOR_TARGET=$$PWD/../ngbinutils/binutils/ranlib \
 	READELF_FOR_TARGET=$$PWD/../ngbinutils/binutils/readelf \
 	STRIP_FOR_TARGET=$$PWD/../ngbinutils/binutils/strip-new \
-	CFLAGS="$(GCC_C_BUILD_FLAGS) $$CFLAGS" \
-	CXXFLAGS="$(GCC_CXX_BUILD_FLAGS) $$CXXFLAGS" \
+	CFLAGS="$$CFLAGS $(GCC_C_BUILD_FLAGS)" \
+	CXXFLAGS="$$CXXFLAGS $(GCC_CXX_BUILD_FLAGS)" \
 	$$CURPWD/toolchain/$(SRC_GCC)/configure \
 	$(EXTRA_BUILD_FLAGS) \
 	--target=m68k-neogeo-elf \
