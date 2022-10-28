@@ -67,7 +67,7 @@ TOOLCHAIN=ngbinutils nggcc ngnewlib ngsdcc nggdb
 GCC_C_BUILD_FLAGS=\
 -Wno-strict-prototypes -Wno-implicit-function-declaration \
 -Wno-old-style-definition -Wno-missing-prototypes -Wimplicit-fallthrough=0 \
--Wno-unknown-warning-option
+-Wno-unknown-warning-option -Wno-use-after-free
 GCC_CXX_BUILD_FLAGS=\
 -Wno-narrowing \
 -DHAVE_DESIGNATED_UNION_INITIALIZERS \
@@ -77,7 +77,7 @@ GCC_CXX_BUILD_FLAGS+= \
 -Wno-format-security -Wno-string-compare -Wno-shift-negative-value \
 -Wno-invalid-offsetof -Wno-ignored-attributes \
 -Wno-literal-suffix -Wno-unknown-warning-option \
--Wno-enum-compare-switch
+-Wno-enum-compare-switch -Wno-odr -Wno-address
 GCC_GMAKE_OVERRIDES= \
 --eval 'override GCC_WARN_CFLAGS = ' \
 --eval 'override GCC_WARN_CXXFLAGS = ' \
