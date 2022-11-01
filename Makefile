@@ -43,7 +43,7 @@ SRC_BINUTILS=binutils-2.35.2
 SRC_GCC=gcc-5.5.0
 SRC_NEWLIB=newlib-4.0.0
 SRC_GDB=gdb-9.2
-SRC_SDCC=sdcc-src-3.7.0
+SRC_SDCC=sdcc-src-4.2.0
 
 TOOLCHAIN=ngbinutils nggcc ngnewlib ngsdcc nggdb
 
@@ -124,7 +124,7 @@ unpack-toolchain: \
 	toolchain/$(SRC_GCC) \
 	toolchain/$(SRC_NEWLIB) \
 	toolchain/$(SRC_GDB) \
-	toolchain/sdcc
+	toolchain/sdcc-$(SRC_SDCC:sdcc-src-%=%)
 
 clean-toolchain:
 	find toolchain -mindepth 1 -maxdepth 1 -not -name README.md -exec rm -rf {} \;
@@ -148,7 +148,7 @@ toolchain/$(SRC_GDB).tar.xz:
 	curl -L $(GNU_MIRROR)/gdb/$(notdir $@) -o $@
 
 toolchain/$(SRC_SDCC).tar.bz2:
-	curl -L http://sourceforge.net/projects/sdcc/files/sdcc/$(SRC_SDCC:sdcc-src-%=%)/$(notdir $@) -o $@
+	curl -L https://sourceforge.net/projects/sdcc/files/sdcc/$(SRC_SDCC:sdcc-src-%=%)/$(notdir $@) -o $@
 else
 toolchain/$(SRC_BINUTILS).tar.bz2 \
 toolchain/$(SRC_GCC).tar.xz \
@@ -158,12 +158,11 @@ toolchain/$(SRC_SDCC).tar.bz2:
 	cp $(LOCAL_PACKAGE_DIR)/$(notdir $@) $@
 endif
 
-
 toolchain/$(SRC_BINUTILS): toolchain/$(SRC_BINUTILS).tar.bz2
 toolchain/$(SRC_GCC): toolchain/$(SRC_GCC).tar.xz
 toolchain/$(SRC_NEWLIB): toolchain/$(SRC_NEWLIB).tar.gz
 toolchain/$(SRC_GDB): toolchain/$(SRC_GDB).tar.xz
-toolchain/sdcc: toolchain/$(SRC_SDCC).tar.bz2
+toolchain/sdcc-$(SRC_SDCC:sdcc-src-%=%): toolchain/$(SRC_SDCC).tar.bz2
 
 
 build-toolchain: $(TOOLCHAIN:%=$(BUILD)/%)
@@ -300,7 +299,7 @@ $(BUILD)/nggdb: toolchain/$(SRC_BINUTILS) toolchain/$(SRC_GDB)
 	--with-system-readline \
 	-v && $(MAKE)
 
-$(BUILD)/ngsdcc: toolchain/sdcc
+$(BUILD)/ngsdcc: toolchain/sdcc-$(SRC_SDCC:sdcc-src-%=%)
 	@echo compiling sdcc...
 	CURPWD=$$(pwd) && \
 	unset CPPFLAGS && \
@@ -309,7 +308,7 @@ $(BUILD)/ngsdcc: toolchain/sdcc
 	cd $(BUILD)/ngsdcc && \
 	include_dir_suffix=include \
 	lib_dir_suffix=lib \
-	$$CURPWD/toolchain/sdcc/configure \
+	$$CURPWD/toolchain/sdcc-$(SRC_SDCC:sdcc-src-%=%)/configure \
 	$(EXTRA_BUILD_FLAGS) \
 	--program-prefix=z80-neogeo-ihx- \
 	--prefix=$(prefix) \
