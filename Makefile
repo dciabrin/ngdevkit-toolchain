@@ -61,6 +61,7 @@ TOOLCHAIN=ngbinutils nggcc ngnewlib ngsdcc nggdb
 # --std=gnu++14: m68k.c:1781:7: error: ISO C++17 does not allow 'register' storage class specifier
 # --std=gnu++14: build/gencondmd: Undefined symbols for architecture x86_64
 # -Wno-reserved-user-defined-literal: defaults.h:126:27: error: invalid suffix on literal; C++11 requires a space between literal and identifier
+# -DCINTERFACE: fix build issue on MSYS2/UCRT64, caused by windows.h being included after gcc/system.h
 #
 # The other options are just there to silent warnings
 #
@@ -83,6 +84,7 @@ GCC_GMAKE_OVERRIDES= \
 --eval 'override GCC_WARN_CXXFLAGS = ' \
 --eval 'override WARN_CFLAGS = ' \
 --eval 'override WARN_CXXFLAGS = ' \
+--eval 'override CFLAGS-prefix.o = -DPREFIX=\"$$(prefix)\" -DBASEVER=$$(BASEVER_s) -DCINTERFACE' \
 --eval 'override CFLAGS-toplev.o = --std=c++98 -DTARGET_NAME=\"m68k-neogeo-elf\"' \
 --eval 'override CFLAGS-reload1.o = --std=gnu++14' \
 --eval 'override CFLAGS-m68k.o = --std=gnu++14' \
