@@ -316,22 +316,32 @@ $(BUILD)/ngsdcc: toolchain/sdcc-$(SRC_SDCC:sdcc-src-%=%)
 	--prefix=$(prefix) \
 	--libexecdir=$(prefix)/z80-neogeo-ihx/lib \
 	--datarootdir=$(prefix)/z80-neogeo-ihx \
-	--disable-non-free \
-	--disable-ucsim \
-	--enable-z80-port \
-	--disable-pic14-port \
-	--disable-pic16-port \
+	--disable-device-lib \
 	--disable-ds390-port \
 	--disable-ds400-port \
+	--disable-ez80_z80-port \
 	--disable-hc08-port \
-	--disable-s08-port \
 	--disable-mcs51-port \
-	--disable-z180-port \
+	--disable-mos6502-port \
+	--disable-non-free \
+	--disable-packihx \
+	--disable-pdk13-port \
+	--disable-pdk14-port \
+	--disable-pdk15-port \
+	--disable-pdk16-port \
+	--disable-pic14-port \
+	--disable-pic16-port \
 	--disable-r2k-port \
+	--disable-r2ka-port \
 	--disable-r3ka-port \
-	--disable-gbz80-port \
-	--disable-tlcs90-port \
+	--disable-s08-port \
+	--disable-sm83-port \
 	--disable-stm8-port \
+	--disable-tlcs90-port \
+	--disable-ucsim \
+	--disable-z180-port \
+	--disable-z80n-port \
+	--enable-z80-port \
 	-v && $(MAKE)
 
 
@@ -351,8 +361,19 @@ install-nggdb: $(BUILD)/nggdb
 
 install-ngsdcc: $(BUILD)/ngsdcc
 	$(EXTRA_BUILD_CMD) && $(MAKE) -C $(BUILD)/ngsdcc install DESTDIR=$(DESTDIR) && \
-	rm -rf $(DESTDIR)$(prefix)/z80-neogeo-ihx/lib/src && \
-	find $(DESTDIR)$(prefix)/z80-neogeo-ihx/lib/ -type d -empty -delete
+	for d in ez80_z80 mos6502 pdk13 pdk14 pdk15 pdk15-stack-auto r2ka sm83 z80n src; do \
+	    rm -rf "$(DESTDIR)$(prefix)/z80-neogeo-ihx/lib/src/$$d"; \
+	done && \
+	find $(DESTDIR)$(prefix)/z80-neogeo-ihx/lib/ -type d -empty -delete && \
+	mkdir -p $(DESTDIR)$(prefix)/z80-neogeo-ihx/bin; \
+	pushd $(DESTDIR)$(prefix)/bin; \
+	for f in z80-neogeo-ihx-*; do \
+	    fbase=`echo $$f | cut -d- -f4`; \
+	    mv $$f $(prefix)/z80-neogeo-ihx/bin/$$fbase; \
+	    echo -e "#!/usr/bin/sh\nPATH=$(prefix)/z80-neogeo-ihx/bin:\$$PATH\n$(prefix)/z80-neogeo-ihx/bin/$$fbase \$$@" > $(DESTDIR)$(prefix)/bin/$$f; \
+            chmod 755 $(DESTDIR)$(prefix)/bin/$$f; \
+	done; \
+	popd
 
 
 clean:
