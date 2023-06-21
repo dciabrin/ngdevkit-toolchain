@@ -316,7 +316,6 @@ $(BUILD)/ngsdcc: toolchain/sdcc-$(SRC_SDCC:sdcc-src-%=%)
 	--prefix=$(prefix) \
 	--libexecdir=$(prefix)/z80-neogeo-ihx/lib \
 	--datarootdir=$(prefix)/z80-neogeo-ihx \
-	--disable-device-lib \
 	--disable-ds390-port \
 	--disable-ds400-port \
 	--disable-ez80_z80-port \
@@ -362,12 +361,16 @@ install-nggdb: $(BUILD)/nggdb
 install-ngsdcc: $(BUILD)/ngsdcc
 	$(EXTRA_BUILD_CMD) && $(MAKE) -C $(BUILD)/ngsdcc install DESTDIR=$(DESTDIR) && \
 	for d in ez80_z80 mos6502 pdk13 pdk14 pdk15 pdk15-stack-auto r2ka sm83 z80n src; do \
-	    rm -rf "$(DESTDIR)$(prefix)/z80-neogeo-ihx/lib/src/$$d"; \
+	    rm -rf "$(DESTDIR)$(prefix)/z80-neogeo-ihx/sdcc/lib/$$d"; \
 	done && \
-	find $(DESTDIR)$(prefix)/z80-neogeo-ihx/lib/ -type d -empty -delete && \
-	mkdir -p $(DESTDIR)$(prefix)/z80-neogeo-ihx/bin; \
+	for d in ds390 ds400 hc08 mcs51 pic14 pic16 r2k r3ka rab sm83 stm8 tlcs90 z180; do \
+	    rm -rf "$(DESTDIR)$(prefix)/z80-neogeo-ihx/sdcc/include/asm/$$d"; \
+	    rm -rf "$(DESTDIR)$(prefix)/z80-neogeo-ihx/sdcc/include/$$d"; \
+	done && \
+	find $(DESTDIR)$(prefix)/z80-neogeo-ihx/sdcc/lib/ -mindepth 1 -type d -empty -delete && \
+	mkdir -p $(DESTDIR)$(prefix)/z80-neogeo-ihx/bin && \
 	pushd $(DESTDIR)$(prefix)/bin; \
-	for f in z80-neogeo-ihx-*; do \
+	for f in `find . -name 'z80-neogeo-ihx-*'`; do \
 	    fbase=`echo $$f | cut -d- -f4`; \
 	    mv $$f $(prefix)/z80-neogeo-ihx/bin/$$fbase; \
 	    echo -e "#!/usr/bin/sh\nPATH=$(prefix)/z80-neogeo-ihx/bin:\$$PATH\n$(prefix)/z80-neogeo-ihx/bin/$$fbase \$$@" > $(DESTDIR)$(prefix)/bin/$$f; \
