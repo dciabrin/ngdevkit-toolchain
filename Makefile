@@ -131,6 +131,13 @@ unpack-toolchain: \
 clean-toolchain:
 	find toolchain -mindepth 1 -maxdepth 1 -not -name README.md -exec rm -rf {} \;
 
+# we have to customize the extract of newlib as the tarball contains a
+# symlink which can not reliably be extracted under MSYS2
+toolchain/$(SRC_NEWLIB):
+	tar -C toolchain -xmf toolchain/$(notdir $<) --exclude 'i386/sys/fenv.h' && \
+	cp toolchain/$(SRC_NEWLIB)/newlib/libc/machine/x86_64/sys/fenv.h toolchain/$(SRC_NEWLIB)/newlib/libc/machine/i386/sys/fenv.h && \
+	cd $@ && for i in `find ../../patches -type f -name '$(shell echo $(notdir $@) | sed "s/-.*//")-*.patch' | sort`; do patch -p1 < $$i; done
+
 toolchain/%:
 	tar -C toolchain -xmf toolchain/$(notdir $<) && \
         cd $@ && for i in `find ../../patches -type f -name '$(shell echo $(notdir $@) | sed "s/-.*//")-*.patch' | sort`; do patch -p1 < $$i; done
