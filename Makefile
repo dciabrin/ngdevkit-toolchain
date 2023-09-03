@@ -38,9 +38,12 @@ LOCAL_PACKAGE_DIR=
 EXTRA_BUILD_CMD=true
 EXTRA_BUILD_FLAGS=
 
+# Common tools
+REALPATH=realpath
+
 # Version of external dependencies
 SRC_BINUTILS=binutils-2.35.2
-SRC_GCC=gcc-5.5.0
+SRC_GCC=gcc-11.4.0
 SRC_NEWLIB=newlib-4.0.0
 SRC_GDB=gdb-9.2
 SRC_SDCC=sdcc-src-4.2.0
@@ -49,46 +52,30 @@ TOOLCHAIN=ngbinutils nggcc ngnewlib ngsdcc nggdb
 
 # GCC: compilation flags to support all compilers / OS
 #
-# Note: building gcc 5.x with clang 13 and gcc 11 requires
-# various flags to disable new checks that are enabled by
-# default and make the compilation fail due to the gcc 5.x
-# codebase being rather old at this point...
-#
-# -Wno-narrowing: tree-object-size.c:73:65: error: narrowing conversion of ‘-1’ from ‘int’ to ‘long unsigned int’
-# -DHAVE_DESIGNATED_UNION_INITIALIZERS: recog.h:357:5: warning: macro expansion producing 'defined' has undefined behavior
-# --std=c++98: diagnostic-core.h:67:13: note: candidate function not viable: no known conversion from 'source_location' (aka 'unsigned int') to 'const char *' for 1st argument
-# --std=gnu++14: reload1.c:115:24: error: use of an operand of type ‘bool’ in ‘operator++’ is forbidden in C++17
-# --std=gnu++14: m68k.c:1781:7: error: ISO C++17 does not allow 'register' storage class specifier
-# --std=gnu++14: build/gencondmd: Undefined symbols for architecture x86_64
-# -Wno-reserved-user-defined-literal: defaults.h:126:27: error: invalid suffix on literal; C++11 requires a space between literal and identifier
+# per-file workarounds:
 # -DCINTERFACE: fix build issue on MSYS2/UCRT64, caused by windows.h being included after gcc/system.h
-#
-# The other options are just there to silent warnings
 #
 GCC_C_BUILD_FLAGS=\
 -Wno-strict-prototypes -Wno-implicit-function-declaration \
--Wno-old-style-definition -Wno-missing-prototypes -Wimplicit-fallthrough=0 \
--Wno-unknown-warning-option -Wno-use-after-free
+-Wno-old-style-definition -Wno-missing-prototypes \
+-Wno-unknown-warning-option -Wno-array-bounds
 GCC_CXX_BUILD_FLAGS=\
--Wno-narrowing \
--DHAVE_DESIGNATED_UNION_INITIALIZERS \
--Wno-reserved-user-defined-literal
-GCC_CXX_BUILD_FLAGS+= \
 -Wno-array-bounds -Wno-deprecated  \
--Wno-format-security -Wno-string-compare -Wno-shift-negative-value \
--Wno-invalid-offsetof -Wno-ignored-attributes \
--Wno-literal-suffix -Wno-unknown-warning-option \
--Wno-enum-compare-switch -Wno-odr -Wno-address
+-Wno-format-security -Wno-string-plus-int -Wno-shift-count-overflow \
+-Wno-ignored-attributes -Wno-unknown-warning-option \
+-Wno-enum-compare-switch -Wno-mismatched-tags -Wno-c++11-narrowing
 GCC_GMAKE_OVERRIDES= \
+--eval 'override CFLAGS-prefix.o = -DPREFIX=\"$$(prefix)\" -DBASEVER=$$(BASEVER_s) -DCINTERFACE' \
+--eval 'override CFLAGS-diagnostic-color.o = -DCINTERFACE' \
 --eval 'override GCC_WARN_CFLAGS = ' \
 --eval 'override GCC_WARN_CXXFLAGS = ' \
 --eval 'override WARN_CFLAGS = ' \
 --eval 'override WARN_CXXFLAGS = ' \
---eval 'override CFLAGS-prefix.o = -DPREFIX=\"$$(prefix)\" -DBASEVER=$$(BASEVER_s) -DCINTERFACE' \
---eval 'override CFLAGS-toplev.o = --std=c++98 -DTARGET_NAME=\"m68k-neogeo-elf\"' \
---eval 'override CFLAGS-reload1.o = --std=gnu++14' \
---eval 'override CFLAGS-m68k.o = --std=gnu++14' \
---eval 'override CFLAGS-build/gencondmd.o = --std=gnu++14'
+--eval 'override LOOSE_WARN = ' \
+--eval 'override C_LOOSE_WARN = ' \
+--eval 'override STRICT_WARN = ' \
+--eval 'override C_STRICT_WARN = '
+
 
 # GDB: compilation flags to support all compilers / OS
 GDB_C_BUILD_FLAGS=\
@@ -101,10 +88,13 @@ GDB_LD_BUILD_FLAGS=
 GDB_PKG_CONFIG_PATH=
 
 ifeq ($(shell uname -s),Darwin)
-GDB_C_BUILD_FLAGS+=-I/usr/local/opt/readline/include
-GDB_CXX_BUILD_FLAGS+=-I/usr/local/opt/readline/include
-GDB_LD_BUILD_FLAGS+=-L/usr/local/opt/readline/lib
-GDB_PKG_CONFIG_PATH+=/usr/local/opt/readline/lib/pkgconfig
+HOMEBREW_PREFIX=$(shell brew --prefix)
+GDB_C_BUILD_FLAGS+=-I$(HOMEBREW_PREFIX)/opt/readline/include
+GDB_CXX_BUILD_FLAGS+=-I$(HOMEBREW_PREFIX)/opt/readline/include
+GDB_LD_BUILD_FLAGS+=-L$(HOMEBREW_PREFIX)/opt/readline/lib
+GDB_PKG_CONFIG_PATH+=$(HOMEBREW_PREFIX)/opt/readline/lib/pkgconfig
+
+REALPATH=grealpath
 endif
 
 
@@ -231,7 +221,7 @@ $(BUILD)/nggcc: $(BUILD)/ngbinutils toolchain/$(SRC_GCC)
 	--datadir=$(prefix)/m68k-neogeo-elf/lib \
 	--includedir=$(prefix)/m68k-neogeo-elf/include \
 	--bindir=$(prefix)/bin \
-	--src=$$(realpath $$CURPWD/toolchain/$(SRC_GCC) --relative-to $$PWD) \
+	--src=$$($(REALPATH) $$CURPWD/toolchain/$(SRC_GCC) --relative-to $$PWD) \
 	--with-system-zlib \
 	--with-cpu=m68000 \
 	--with-threads=single \
@@ -311,7 +301,6 @@ $(BUILD)/nggdb: toolchain/$(SRC_BINUTILS) toolchain/$(SRC_GDB)
 $(BUILD)/ngsdcc: toolchain/sdcc-$(SRC_SDCC:sdcc-src-%=%)
 	@echo compiling sdcc...
 	CURPWD=$$(pwd) && \
-	unset CPPFLAGS && \
 	$(EXTRA_BUILD_CMD) && \
 	mkdir -p $(BUILD)/ngsdcc && \
 	cd $(BUILD)/ngsdcc && \
