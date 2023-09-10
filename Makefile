@@ -48,7 +48,7 @@ SRC_NEWLIB=newlib-4.0.0
 SRC_GDB=gdb-9.2
 SRC_SDCC=sdcc-src-4.2.0
 
-TOOLCHAIN=ngbinutils nggcc ngnewlib ngsdcc nggdb
+TOOLCHAIN=nggdb # ngbinutils nggcc ngnewlib ngsdcc nggdb
 
 # GCC: compilation flags to support all compilers / OS
 #
@@ -88,7 +88,8 @@ GDB_LD_BUILD_FLAGS=
 GDB_PKG_CONFIG_PATH=
 
 ifeq ($(shell uname -s),Darwin)
-HOMEBREW_PREFIX=$(shell brew --prefix)
+HOMEBREW_PREFIX=$(shell PATH="$$PATH:/opt/homebrew/bin:/usr/local/bin" brew --prefix)
+
 GDB_C_BUILD_FLAGS+=-I$(HOMEBREW_PREFIX)/opt/readline/include
 GDB_CXX_BUILD_FLAGS+=-I$(HOMEBREW_PREFIX)/opt/readline/include
 GDB_LD_BUILD_FLAGS+=-L$(HOMEBREW_PREFIX)/opt/readline/lib
@@ -271,6 +272,8 @@ $(BUILD)/ngnewlib: $(BUILD)/nggcc toolchain/$(SRC_NEWLIB)
 	--enable-newlib-nano-formatted-io \
 	--disable-nls \
 	-v && $(MAKE)
+
+$(warning $(GDB_C_BUILD_FLAGS) $(GDB_CXX_BUILD_FLAGS) $(GDB_LD_BUILD_FLAGS) $(GDB_PKG_CONFIG_PATH))
 
 $(BUILD)/nggdb: toolchain/$(SRC_BINUTILS) toolchain/$(SRC_GDB)
 	@echo compiling gdb...
