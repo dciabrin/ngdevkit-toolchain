@@ -370,7 +370,7 @@ install-ngsdcc: $(BUILD)/ngsdcc
 	(cd $(DESTDIR)$(prefix)/bin; \
 	for f in `find . -name 'z80-neogeo-ihx-*'`; do \
 	    fbase=`echo $$f | cut -d- -f4`; \
-	    mv $$f $(prefix)/z80-neogeo-ihx/bin/$$fbase; \
+	    mv $$f $(DESTDIR)$(prefix)/z80-neogeo-ihx/bin/$$fbase; \
 	    echo "#!/bin/sh" > $(DESTDIR)$(prefix)/bin/$$f; \
 	    echo "PATH=$(prefix)/z80-neogeo-ihx/bin:\$$PATH" >> $(DESTDIR)$(prefix)/bin/$$f; \
 	    echo "$(prefix)/z80-neogeo-ihx/bin/$$fbase \$$@" >> $(DESTDIR)$(prefix)/bin/$$f; \
