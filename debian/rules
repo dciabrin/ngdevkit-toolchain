@@ -1,5 +1,7 @@
 #!/usr/bin/make -f
 
+# gcc-11 requires -fPIC with Jammy's hardened compile flags
+DEB_LDFLAGS_MAINT_APPEND=-Wl,--no-as-needed -fPIC
 # gdb-9 cannot be built by gcc-11 with -Werror=format-security
 DEB_BUILD_MAINT_OPTIONS= hardening=-format
 DPKG_EXPORT_BUILDFLAGS = 1
