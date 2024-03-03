@@ -46,7 +46,7 @@ SRC_BINUTILS=binutils-2.35.2
 SRC_GCC=gcc-11.4.0
 SRC_NEWLIB=newlib-4.0.0
 SRC_GDB=gdb-9.2
-SRC_SDCC=sdcc-src-4.2.0
+SRC_SDCC=sdcc-src-4.4.0
 
 TOOLCHAIN=ngbinutils nggcc ngnewlib ngsdcc nggdb
 
