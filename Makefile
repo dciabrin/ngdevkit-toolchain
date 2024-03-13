@@ -58,7 +58,8 @@ TOOLCHAIN=ngbinutils nggcc ngnewlib ngsdcc nggdb
 GCC_C_BUILD_FLAGS=\
 -Wno-strict-prototypes -Wno-implicit-function-declaration \
 -Wno-old-style-definition -Wno-missing-prototypes \
--Wno-unknown-warning-option -Wno-array-bounds
+-Wno-unknown-warning-option -Wno-array-bounds \
+-Wno-incompatible-pointer-types
 GCC_CXX_BUILD_FLAGS=\
 -Wno-array-bounds -Wno-deprecated  \
 -Wno-format-security -Wno-string-plus-int -Wno-shift-count-overflow \
@@ -83,7 +84,7 @@ GDB_C_BUILD_FLAGS=\
 -Wno-visibility -Wno-unused-value -Wno-unknown-warning-option \
 -Wno-implicit-function-declaration
 GDB_CXX_BUILD_FLAGS= \
--Wno-deprecated-copy-dtor
+-Wno-deprecated-copy-dtor -Wno-enum-constexpr-conversion
 GDB_LD_BUILD_FLAGS=
 GDB_PKG_CONFIG_PATH=
 
@@ -335,6 +336,8 @@ $(BUILD)/ngsdcc: toolchain/sdcc-$(SRC_SDCC:sdcc-src-%=%)
 	--disable-ucsim \
 	--disable-z180-port \
 	--disable-z80n-port \
+	--disable-r800-port \
+	--disable-mos65c02-port \
 	--enable-z80-port \
 	-v \
 	include_dir_suffix=include \
