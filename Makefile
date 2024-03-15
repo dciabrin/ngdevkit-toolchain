@@ -338,6 +338,7 @@ $(BUILD)/ngsdcc: toolchain/sdcc-$(SRC_SDCC:sdcc-src-%=%)
 	--disable-z80n-port \
 	--disable-r800-port \
 	--disable-mos65c02-port \
+	--disable-device-lib \
 	--enable-z80-port \
 	-v \
 	include_dir_suffix=include \
