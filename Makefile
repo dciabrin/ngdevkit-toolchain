@@ -369,16 +369,18 @@ install-ngsdcc: $(BUILD)/ngsdcc
 	    rm -rf "$(DESTDIR)$(prefix)/z80-neogeo-ihx/include/asm/$$d"; \
 	    rm -rf "$(DESTDIR)$(prefix)/z80-neogeo-ihx/include/$$d"; \
 	done && \
-	find $(DESTDIR)$(prefix)/z80-neogeo-ihx/lib/ -mindepth 1 -type d -empty -delete && \
-	mkdir -p $(DESTDIR)$(prefix)/z80-neogeo-ihx/bin && \
-	(cd $(DESTDIR)$(prefix)/bin; \
+	if [ -d "$(DESTDIR)$(prefix)/z80-neogeo-ihx/lib" ]; then \
+	    find "$(DESTDIR)$(prefix)/z80-neogeo-ihx/lib" -mindepth 1 -type d -empty -delete; \
+	fi && \
+	mkdir -p "$(DESTDIR)$(prefix)/z80-neogeo-ihx/bin" && \
+	(cd "$(DESTDIR)$(prefix)/bin"; \
 	for f in `find . -name 'z80-neogeo-ihx-*'`; do \
 	    fbase=`echo $$f | cut -d- -f4`; \
-	    mv $$f $(DESTDIR)$(prefix)/z80-neogeo-ihx/bin/$$fbase; \
-	    echo "#!/bin/sh" > $(DESTDIR)$(prefix)/bin/$$f; \
-	    echo "PATH=$(prefix)/z80-neogeo-ihx/bin:\$$PATH" >> $(DESTDIR)$(prefix)/bin/$$f; \
-	    echo "$(prefix)/z80-neogeo-ihx/bin/$$fbase \$$@" >> $(DESTDIR)$(prefix)/bin/$$f; \
-	    chmod 755 $(DESTDIR)$(prefix)/bin/$$f; \
+	    mv $$f "$(DESTDIR)$(prefix)/z80-neogeo-ihx/bin/$$fbase"; \
+	    echo "#!/bin/sh" > "$(DESTDIR)$(prefix)/bin/$$f"; \
+	    echo "PATH=$(prefix)/z80-neogeo-ihx/bin:\$$PATH" >> "$(DESTDIR)$(prefix)/bin/$$f"; \
+	    echo "$(prefix)/z80-neogeo-ihx/bin/$$fbase \$$@" >> "$(DESTDIR)$(prefix)/bin/$$f"; \
+	    chmod 755 "$(DESTDIR)$(prefix)/bin/$$f"; \
 	done)
 
 
