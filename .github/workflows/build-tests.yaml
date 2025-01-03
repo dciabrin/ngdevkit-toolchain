@@ -4,26 +4,26 @@ on:
     branches-ignore:
       - 'master'
 jobs:
-  linux:
-    name: Linux build
-    runs-on: ubuntu-latest
-    env:
-      PREFIX: "/usr"
-      GNU_MIRROR: "https://mirror.checkdomain.de/gnu"
-      NEWLIB_MIRROR: "https://ftp.gwdg.de/pub/linux/sources.redhat.com"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+  # linux:
+  #   name: Linux build
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     PREFIX: "/usr"
+  #     GNU_MIRROR: "https://mirror.checkdomain.de/gnu"
+  #     NEWLIB_MIRROR: "https://ftp.gwdg.de/pub/linux/sources.redhat.com"
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
 
-      - name: Dependencies
-        run: >
-          sudo apt-get install pkg-config gcc g++ flex bison gawk
-          gettext bzip2 lzma xz-utils libboost-dev libexpat1-dev
-          libgc-dev libgmp-dev zlib1g-dev libipt-dev libmpc-dev
-          libmpfr-dev libncurses5-dev libreadline-dev texinfo
+  #     - name: Dependencies
+  #       run: >
+  #         sudo apt-get install pkg-config gcc g++ flex bison gawk
+  #         gettext bzip2 lzma xz-utils libboost-dev libexpat1-dev
+  #         libgc-dev libgmp-dev zlib1g-dev libipt-dev libmpc-dev
+  #         libmpfr-dev libncurses5-dev libreadline-dev texinfo
 
-      - name: Build
-        run: ./.github/scripts/build.sh
+  #     - name: Build
+  #       run: ./.github/scripts/build.sh
 
   macos:
     name: macOS build
@@ -38,9 +38,9 @@ jobs:
 
       - name: Dependencies
         run: >
-          brew install autoconf automake bison boost bzip2 coreutils gawk
+          brew install -q autoconf automake bison boost bzip2 coreutils gawk
           libtool make pkg-config readline texinfo expat flex gettext
-          gmp gnu-sed libmpc mpfr ncurses xz zlib
+          gmp gnu-sed libmpc mpfr ncurses xz zlib zstd
 
       - name: Build
         run: ./.github/scripts/build.sh
