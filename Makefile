@@ -1,4 +1,4 @@
-# Copyright (c) 2019-2022 Damien Ciabrini
+# Copyright (c) 2019-2025 Damien Ciabrini
 # This file is part of ngdevkit
 #
 # ngdevkit is free software: you can redistribute it and/or modify
@@ -91,12 +91,21 @@ GDB_PKG_CONFIG_PATH=
 ifeq ($(shell uname -s),Darwin)
 HOMEBREW_PREFIX=$(shell PATH="$$PATH:/opt/homebrew/bin:/usr/local/bin" brew --prefix)
 
+CFLAGS=-I$(HOMEBREW_PREFIX)/include
+CXXFLAGS=-I$(HOMEBREW_PREFIX)/include
+CPPFLAGS=-I$(HOMEBREW_PREFIX)/include
+LDFLAGS=-L$(HOMEBREW_PREFIX)/lib -Wl,-rpath,$(HOMEBREW_PREFIX)/lib
+EXTRA_BUILD_CMD=export CFLAGS="$$CFLAGS $(CFLAGS)" CXXFLAGS="$$CXXFLAGS $(CXXFLAGS)" CPPFLAGS="$$CPPFLAGS $(CPPFLAGS)" LDFLAGS="$$LDFLAGS $(LDFLAGS)"
+
+GCC_C_BUILD_FLAGS+=-DHAVE_SETLOCALE
+GCC_CXX_BUILD_FLAGS+=-DHAVE_SETLOCALE
+
 GDB_C_BUILD_FLAGS+=-I$(HOMEBREW_PREFIX)/opt/readline/include
 GDB_CXX_BUILD_FLAGS+=-I$(HOMEBREW_PREFIX)/opt/readline/include
 GDB_LD_BUILD_FLAGS+=-L$(HOMEBREW_PREFIX)/opt/readline/lib
 GDB_PKG_CONFIG_PATH+=$(HOMEBREW_PREFIX)/opt/readline/lib/pkgconfig
 
-REALPATH=grealpath
+REALPATH=$(HOMEBREW_PREFIX)/bin/grealpath
 endif
 
 
