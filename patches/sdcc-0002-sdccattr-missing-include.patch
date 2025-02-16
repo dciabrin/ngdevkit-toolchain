@@ -1,0 +1,11 @@
+diff -Nru sdcc-4.4.0/src/SDCCattr.c sdcc-4.4.0-string/src/SDCCattr.c
+--- sdcc-4.4.0/src/SDCCattr.c	2024-03-15 15:14:20.494839727 +0100
++++ sdcc-4.4.0-string/src/SDCCattr.c	2025-02-16 19:13:05.181173979 +0100
+@@ -22,6 +22,7 @@
+ #include "SDCCsymt.h"
+ #include "SDCCutil.h"
+ #include "newalloc.h"
++#include <string.h>
+ 
+ attribute *newAttribute(const symbol *token_sym, const char *argument_clause)
+ {
