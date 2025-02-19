@@ -1,5 +1,7 @@
 #!/bin/bash
+MAKE=$(which gmake make 2>/dev/null | head -1)
+SUDO=$(which sudo 2>/dev/null)
 set -eu
-MAKE=$(which gmake make | head -1)
-$MAKE all prefix=$PREFIX GNU_MIRROR=$GNU_MIRROR NEWLIB_MIRROR=$NEWLIB_MIRROR
-sudo $MAKE install prefix=$PREFIX
+test -x "$MAKE"
+$MAKE -j all prefix=$PREFIX GNU_MIRROR=$GNU_MIRROR NEWLIB_MIRROR=$NEWLIB_MIRROR
+$SUDO $MAKE install prefix=$PREFIX
