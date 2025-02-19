@@ -108,6 +108,13 @@ GDB_PKG_CONFIG_PATH+=$(HOMEBREW_PREFIX)/opt/readline/lib/pkgconfig
 REALPATH=$(HOMEBREW_PREFIX)/bin/grealpath
 endif
 
+ifeq ($(shell uname -o),Msys)
+EXTRA_BUILD_FLAGS+=--build=$(MINGW_CHOST) --host=$(MINGW_CHOST)
+
+GCC_C_BUILD_FLAGS+=-DHAVE_SETLOCALE
+GCC_CXX_BUILD_FLAGS+=-DHAVE_SETLOCALE
+endif
+
 
 all: \
 	download-toolchain \

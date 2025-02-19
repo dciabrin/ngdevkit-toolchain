@@ -4,43 +4,85 @@ on:
     branches-ignore:
       - 'master'
 jobs:
-  linux:
-    name: Linux build
-    runs-on: ubuntu-latest
+  # linux:
+  #   name: Linux build
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     PREFIX: "/usr"
+  #     GNU_MIRROR: "https://mirror.checkdomain.de/gnu"
+  #     NEWLIB_MIRROR: "https://ftp.gwdg.de/pub/linux/sources.redhat.com"
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+
+  #     - name: Dependencies
+  #       run: >
+  #         sudo apt-get install pkg-config gcc g++ flex bison gawk
+  #         gettext bzip2 lzma xz-utils libboost-dev libexpat1-dev
+  #         libgc-dev libgmp-dev zlib1g-dev libipt-dev libmpc-dev
+  #         libmpfr-dev libncurses5-dev libreadline-dev texinfo
+
+  #     - name: Build
+  #       run: ./.github/scripts/build.sh
+
+  win:
+    name: "Windows MSYS2 build"
+    runs-on: windows-latest
     env:
-      PREFIX: "/usr"
+      PREFIX: "/ucrt64/local"
       GNU_MIRROR: "https://mirror.checkdomain.de/gnu"
       NEWLIB_MIRROR: "https://ftp.gwdg.de/pub/linux/sources.redhat.com"
+    defaults:
+      run:
+        shell: msys2 {0}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Dependencies
-        run: >
-          sudo apt-get install pkg-config gcc g++ flex bison gawk
-          gettext bzip2 lzma xz-utils libboost-dev libexpat1-dev
-          libgc-dev libgmp-dev zlib1g-dev libipt-dev libmpc-dev
-          libmpfr-dev libncurses5-dev libreadline-dev texinfo
+      - name: Install MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install:
+            git autoconf automake flex bison gawk make patch sed tar texinfo
+            mingw-w64-ucrt-x86_64-boost
+            mingw-w64-ucrt-x86_64-bzip2
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-libtool
+            mingw-w64-ucrt-x86_64-pkgconf
+            mingw-w64-ucrt-x86_64-readline
+            mingw-w64-ucrt-x86_64-xz
+            mingw-w64-ucrt-x86_64-expat
+            mingw-w64-ucrt-x86_64-gettext
+            mingw-w64-ucrt-x86_64-gmp
+            mingw-w64-ucrt-x86_64-mpc
+            mingw-w64-ucrt-x86_64-mpfr
+            mingw-w64-ucrt-x86_64-ncurses
+            mingw-w64-ucrt-x86_64-gmp
+            mingw-w64-ucrt-x86_64-zlib
 
       - name: Build
         run: ./.github/scripts/build.sh
 
-  macos:
-    name: macOS build
-    runs-on: macos-latest
-    env:
-      PREFIX: "/usr/local/ngdevkit"
-      GNU_MIRROR: "https://mirror.checkdomain.de/gnu"
-      NEWLIB_MIRROR: "https://ftp.gwdg.de/pub/linux/sources.redhat.com"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+  # macos:
+  #   name: macOS build
+  #   runs-on: macos-latest
+  #   env:
+  #     PREFIX: "/usr/local/ngdevkit"
+  #     GNU_MIRROR: "https://mirror.checkdomain.de/gnu"
+  #     NEWLIB_MIRROR: "https://ftp.gwdg.de/pub/linux/sources.redhat.com"
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
 
-      - name: Dependencies
-        run: >
-          brew install -q autoconf automake bison boost bzip2 coreutils gawk
-          libtool make pkg-config readline texinfo expat flex gettext
-          gmp gnu-sed libmpc mpfr ncurses xz zlib zstd
+  #     - name: Dependencies
+  #       run: >
+  #         brew install -q autoconf automake bison boost bzip2 coreutils gawk
+  #         libtool make pkg-config readline texinfo expat flex gettext
+  #         gmp gnu-sed libmpc mpfr ncurses xz zlib zstd
 
-      - name: Build
-        run: ./.github/scripts/build.sh
+  #     - name: Build
+  #       run: ./.github/scripts/build.sh
