@@ -249,6 +249,7 @@ $(BUILD)/nggcc: $(BUILD)/ngbinutils toolchain/$(SRC_GCC) toolchain/$(SRC_NEWLIB)
 	STRIP_FOR_TARGET=$$PWD/../ngbinutils/binutils/strip-new \
 	CFLAGS="$$CFLAGS $(GCC_C_BUILD_FLAGS)" \
 	CXXFLAGS="$$CXXFLAGS $(GCC_CXX_BUILD_FLAGS)" \
+	CXX="$${CXX:-g++} -std=gnu++17" \
 	$$CURPWD/toolchain/$(SRC_GCC)/configure \
 	$(EXTRA_BUILD_FLAGS) \
 	--target=m68k-neogeo-elf \
