@@ -1,4 +1,4 @@
-# Copyright (c) 2019-2025 Damien Ciabrini
+# Copyright (c) 2019-2026 Damien Ciabrini
 # This file is part of ngdevkit
 #
 # ngdevkit is free software: you can redistribute it and/or modify
@@ -215,6 +215,7 @@ $(BUILD)/ngbinutils: toolchain/$(SRC_BINUTILS)
 	--datadir=$(prefix)/m68k-neogeo-elf/lib \
 	--includedir=$(prefix)/m68k-neogeo-elf/include \
 	--bindir=$(prefix)/bin \
+	--with-system-zlib \
 	-v && $(MAKE)
 
 # create various path so that xgcc's default system include path can be used
@@ -336,6 +337,7 @@ $(BUILD)/nggdb: toolchain/$(SRC_GDB)
 	--bindir=$(prefix)/bin \
 	--target=m68k-neogeo-elf \
 	--with-system-readline \
+	--with-system-zlib \
 	-v && $(MAKE)
 
 $(BUILD)/ngsdcc: toolchain/sdcc-$(SRC_SDCC:sdcc-src-%=%)

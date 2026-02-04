@@ -37,37 +37,37 @@ jobs:
           path: toolchain/*.tar.*
           key: ${{ steps.get-hash.outputs.hash }}
 
-  linux:
-    name: Linux build
-    runs-on: ubuntu-latest
-    needs: [cache]
-    env:
-      PREFIX: "/usr"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  # linux:
+  #   name: Linux build
+  #   runs-on: ubuntu-latest
+  #   needs: [cache]
+  #   env:
+  #     PREFIX: "/usr"
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
 
-      - name: Hash for current toolchain dependencies
-        id: get-hash
-        run: echo "hash=$(make hash-toolchain)" >> $GITHUB_OUTPUT
+  #     - name: Hash for current toolchain dependencies
+  #       id: get-hash
+  #       run: echo "hash=$(make hash-toolchain)" >> $GITHUB_OUTPUT
 
-      - name: Use toolchain dependencies cache
-        uses: actions/cache@v4
-        id: cache
-        with:
-          path: toolchain/*.tar.*
-          key: ${{ steps.get-hash.outputs.hash }}
+  #     - name: Use toolchain dependencies cache
+  #       uses: actions/cache@v4
+  #       id: cache
+  #       with:
+  #         path: toolchain/*.tar.*
+  #         key: ${{ steps.get-hash.outputs.hash }}
 
-      - name: Dependencies
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y pkg-config gcc g++ flex bison gawk
-          gettext bzip2 lzma xz-utils libboost-dev libexpat1-dev
-          libgc-dev libgmp-dev zlib1g-dev libipt-dev libmpc-dev
-          libmpfr-dev libncurses5-dev libreadline-dev texinfo
+  #     - name: Dependencies
+  #       run: |
+  #         sudo apt-get update -y
+  #         sudo apt-get install -y pkg-config gcc g++ flex bison gawk
+  #         gettext bzip2 lzma xz-utils libboost-dev libexpat1-dev
+  #         libgc-dev libgmp-dev zlib1g-dev libipt-dev libmpc-dev
+  #         libmpfr-dev libncurses5-dev libreadline-dev texinfo
 
-      - name: Build
-        run: ./.github/scripts/build.sh
+  #     - name: Build
+  #       run: ./.github/scripts/build.sh
 
   # win:
   #   name: "Windows MSYS2 build"
@@ -120,32 +120,32 @@ jobs:
   #     - name: Build
   #       run: ./.github/scripts/build.sh
 
-  # macos:
-  #   name: macOS build
-  #   runs-on: macos-latest
-  #   needs: [cache]
-  #   env:
-  #     PREFIX: "/usr/local/ngdevkit"
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
+  macos:
+    name: macOS build
+    runs-on: macos-latest
+    needs: [cache]
+    env:
+      PREFIX: "/usr/local/ngdevkit"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  #     - name: Hash for current toolchain dependencies
-  #       id: get-hash
-  #       run: echo "hash=$(make hash-toolchain)" >> $GITHUB_OUTPUT
+      - name: Hash for current toolchain dependencies
+        id: get-hash
+        run: echo "hash=$(make hash-toolchain)" >> $GITHUB_OUTPUT
 
-  #     - name: Use toolchain dependencies cache
-  #       uses: actions/cache@v4
-  #       id: cache
-  #       with:
-  #         path: toolchain/*.tar.*
-  #         key: ${{ steps.get-hash.outputs.hash }}
+      - name: Use toolchain dependencies cache
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: toolchain/*.tar.*
+          key: ${{ steps.get-hash.outputs.hash }}
 
-  #     - name: Dependencies
-  #       run: >
-  #         brew install -q autoconf automake bison boost bzip2 coreutils gawk
-  #         libtool make pkg-config readline texinfo expat flex gettext
-  #         gmp gnu-sed libmpc mpfr ncurses xz zlib zstd
+      - name: Dependencies
+        run: >
+          brew install -q autoconf automake bison boost bzip2 coreutils gawk
+          libtool make pkg-config readline texinfo expat flex gettext
+          gmp gnu-sed libmpc mpfr ncurses xz zlib zstd
 
-  #     - name: Build
-  #       run: ./.github/scripts/build.sh
+      - name: Build
+        run: ./.github/scripts/build.sh
