@@ -76,6 +76,7 @@ GCC_CXX_BUILD_FLAGS=\
 GCC_GMAKE_OVERRIDES= \
 --eval 'override CFLAGS-prefix.o = -DPREFIX=\"$$(prefix)\" -DBASEVER=$$(BASEVER_s) -DCINTERFACE' \
 --eval 'override CFLAGS-diagnostic-color.o = -DCINTERFACE' \
+--eval 'override PIEFLAG = -fPIE ' \
 --eval 'override GCC_WARN_CFLAGS = ' \
 --eval 'override GCC_WARN_CXXFLAGS = ' \
 --eval 'override WARN_CFLAGS = ' \
@@ -249,6 +250,7 @@ $(BUILD)/nggcc: $(BUILD)/ngbinutils toolchain/$(SRC_GCC) toolchain/$(SRC_NEWLIB)
 	READELF_FOR_TARGET=$$PWD/../ngbinutils/binutils/readelf \
 	STRIP_FOR_TARGET=$$PWD/../ngbinutils/binutils/strip-new \
 	CFLAGS="$$CFLAGS $(GCC_C_BUILD_FLAGS)" \
+	CFLAGS_FOR_BUILD="$${CFLAGS_FOR_BUILD:-$$CFLAGS} $(GCC_C_BUILD_FLAGS)" \
 	CXXFLAGS="$$CXXFLAGS $(GCC_CXX_BUILD_FLAGS)" \
 	CXX="$${CXX:-g++} -std=gnu++17" \
 	$$CURPWD/toolchain/$(SRC_GCC)/configure \
