@@ -43,7 +43,7 @@ REALPATH=realpath
 
 # Version of external dependencies
 SRC_BINUTILS=binutils-2.44
-SRC_GCC=gcc-11.4.0
+SRC_GCC=gcc-15.3.0
 SRC_NEWLIB=newlib-4.0.0
 SRC_GDB=gdb-16.3
 SRC_SDCC=sdcc-src-4.4.0
@@ -96,6 +96,10 @@ GDB_CXX_BUILD_FLAGS= \
 -Wno-deprecated-copy-dtor -Wno-enum-constexpr-conversion
 GDB_LD_BUILD_FLAGS=
 GDB_PKG_CONFIG_PATH=
+
+# newlib: compilation flags to support all compilers / OS
+NEWLIB_C_BUILD_FLAGS=\
+-Wno-implicit-function-declaration -Wno-implicit-int
 
 ifeq ($(shell uname -s),Darwin)
 HOMEBREW_PREFIX=$(shell PATH="$$PATH:/opt/homebrew/bin:/usr/local/bin" brew --prefix)
@@ -221,7 +225,7 @@ $(BUILD)/ngbinutils: toolchain/$(SRC_BINUTILS)
 
 # create various path so that xgcc's default system include path can be used
 # for newlib's includes before they are installed in their destination directory
-$(BUILD)/nggcc/m68k-neogeo-elf/sys-include: toolchain/$(SRC_GCC) toolchain/$(SRC_NEWLIB)
+$(BUILD)/nggcc/m68k-neogeo-elf/include: toolchain/$(SRC_GCC) toolchain/$(SRC_NEWLIB)
 	mkdir -p $(dir $@) $(dir $@)lib/gcc/m68k-neogeo-elf/`cat toolchain/$(SRC_GCC)/gcc/BASE-VER`
 	if [ ! -d $@ ]; then \
 	    cp -a toolchain/$(SRC_NEWLIB)/newlib/libc/include $@; \
@@ -236,6 +240,8 @@ $(BUILD)/nggcc/m68k-neogeo-elf/sys-include: toolchain/$(SRC_GCC) toolchain/$(SRC
 
 $(BUILD)/nggcc: $(BUILD)/ngbinutils toolchain/$(SRC_GCC) toolchain/$(SRC_NEWLIB)
 	@echo compiling gcc...
+	echo "preparing newlib sysroot for libgcc"
+	$(MAKE) $(BUILD)/nggcc/m68k-neogeo-elf/include && \
 	CURPWD=$$(pwd) && \
 	$(EXTRA_BUILD_CMD) && \
 	mkdir -p $(BUILD)/nggcc && \
@@ -252,7 +258,6 @@ $(BUILD)/nggcc: $(BUILD)/ngbinutils toolchain/$(SRC_GCC) toolchain/$(SRC_NEWLIB)
 	CFLAGS="$$CFLAGS $(GCC_C_BUILD_FLAGS)" \
 	CFLAGS_FOR_BUILD="$${CFLAGS_FOR_BUILD:-$$CFLAGS} $(GCC_C_BUILD_FLAGS)" \
 	CXXFLAGS="$$CXXFLAGS $(GCC_CXX_BUILD_FLAGS)" \
-	CXX="$${CXX:-g++} -std=gnu++17" \
 	$$CURPWD/toolchain/$(SRC_GCC)/configure \
 	$(EXTRA_BUILD_FLAGS) \
 	--target=m68k-neogeo-elf \
@@ -270,13 +275,10 @@ $(BUILD)/nggcc: $(BUILD)/ngbinutils toolchain/$(SRC_GCC) toolchain/$(SRC_NEWLIB)
 	--with-gnu-as \
 	--with-gnu-ld \
 	--with-newlib \
-	--without-isl \
 	--disable-multilib \
 	--disable-libssp \
 	--enable-languages=c,c++ \
 	-v && \
-	echo "preparing newlib sysroot for libgcc" && \
-	$(MAKE)	-C $$CURPWD $(BUILD)/nggcc/m68k-neogeo-elf/sys-include && \
 	$(MAKE) --eval 'override prefix_to_exec_prefix = ' tooldir=$(prefix)/m68k-neogeo-elf build_tooldir=$(prefix)/m68k-neogeo-elf $(GCC_GMAKE_OVERRIDES)
 
 $(BUILD)/ngnewlib: $(BUILD)/nggcc toolchain/$(SRC_NEWLIB)
@@ -295,6 +297,7 @@ $(BUILD)/ngnewlib: $(BUILD)/nggcc toolchain/$(SRC_NEWLIB)
 	RANLIB_FOR_TARGET=$$PWD/../ngbinutils/binutils/ranlib \
 	READELF_FOR_TARGET=$$PWD/../ngbinutils/binutils/readelf \
 	STRIP_FOR_TARGET=$$PWD/../ngbinutils/binutils/strip-new \
+	CFLAGS_FOR_TARGET="-g -O2 $(NEWLIB_C_BUILD_FLAGS)" \
 	$$CURPWD/toolchain/newlib-4.0.0/configure \
 	$(EXTRA_BUILD_FLAGS) \
 	--prefix=$(prefix) \

@@ -1,0 +1,32 @@
+From: Hans-Peter Nilsson <hp@axis.com>
+Date: Tue, 16 Feb 2021 16:42:01 +0000 (+0100)
+Subject: Include malloc.h in libc/stdlib/aligned_alloc.c
+X-Git-Tag: cygwin-3_2_0-release~46
+X-Git-Url: https://sourceware.org/git/?p=newlib-cygwin.git;a=commitdiff_plain;h=c1a565c3966c7a13a13e2c73b49e4ed4c21f4d0c
+
+Include malloc.h in libc/stdlib/aligned_alloc.c
+
+Without this, for a bare-iron/simulator target such as cris-elf,
+you'll see, at newlib build time:
+
+/x/gccobj/./gcc/xgcc -B/x/gccobj/./gcc/ <many options elided> -c -o lib_a-aligned_alloc.o \
+ `test -f 'aligned_alloc.c' || echo '/y/newlib/libc/stdlib/'`aligned_alloc.c
+/y/newlib/libc/stdlib/aligned_alloc.c: In function 'aligned_alloc':
+/y/newlib/libc/stdlib/aligned_alloc.c:35:10: warning: implicit declaration of function \
+ '_memalign_r' [-Wimplicit-function-declaration]
+   35 |   return _memalign_r (_REENT, align, size);
+      |          ^~~~~~~~~~~
+---
+
+diff --git a/newlib/libc/stdlib/aligned_alloc.c b/newlib/libc/stdlib/aligned_alloc.c
+index feb22c24b..06b3883cf 100644
+--- a/newlib/libc/stdlib/aligned_alloc.c
++++ b/newlib/libc/stdlib/aligned_alloc.c
+@@ -28,6 +28,7 @@
+ 
+ #include <reent.h>
+ #include <stdlib.h>
++#include <malloc.h>
+ 
+ void *
+ aligned_alloc (size_t align, size_t size)
