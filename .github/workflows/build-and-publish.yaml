@@ -64,7 +64,7 @@ jobs:
           sudo apt-get install pkg-config gcc g++ flex bison gawk
           gettext bzip2 lzma xz-utils libboost-dev libexpat1-dev
           libgc-dev libgmp-dev zlib1g-dev libipt-dev libmpc-dev
-          libmpfr-dev libncurses5-dev libreadline-dev texinfo
+          libmpfr-dev libisl-dev libncurses5-dev libreadline-dev texinfo
 
       - name: Build
         run: ./.github/scripts/build.sh
@@ -101,6 +101,7 @@ jobs:
             mingw-w64-ucrt-x86_64-gmp
             mingw-w64-ucrt-x86_64-mpc
             mingw-w64-ucrt-x86_64-mpfr
+            mingw-w64-ucrt-x86_64-isl
             mingw-w64-ucrt-x86_64-ncurses
             mingw-w64-ucrt-x86_64-gmp
             mingw-w64-ucrt-x86_64-zlib
@@ -145,7 +146,7 @@ jobs:
         run: >
           brew install -q autoconf automake bison boost bzip2 coreutils gawk
           libtool make pkg-config readline texinfo expat flex gettext
-          gmp gnu-sed libmpc mpfr ncurses xz zlib zstd
+          gmp gnu-sed libmpc mpfr isl ncurses xz zlib zstd
 
       - name: Build
         run: ./.github/scripts/build.sh
