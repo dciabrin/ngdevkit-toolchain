@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 10),
   autoconf, automake, pkg-config, flex, bison, gawk, gettext,
   bzip2, lzma, xz-utils,
   libboost-dev, libexpat1-dev, libgc-dev, libgmp-dev, zlib1g-dev,
-  libipt-dev, libmpc-dev, libmpfr-dev, libncurses5-dev, libreadline-dev,
+  libipt-dev, libisl-dev, libmpc-dev, libmpfr-dev, libncurses5-dev, libreadline-dev,
   texinfo
 Standards-Version: 4.1.2
 Homepage: https://github.com/dciabrin/ngdevkit-toolchain
