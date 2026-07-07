@@ -399,12 +399,15 @@ ifeq ($(shell uname -o),Msys)
 	mkdir -p $(DESTDIR)$(prefix)/bin; \
 	for i in ar ranlib; do \
 	    rm -f $(DESTDIR)$(prefix)/bin/m68k-neogeo-elf-$$i.exe; \
-	    echo -e \
-"#!/bin/sh\n"\
-"# NOTE: MINGW may be configured to implement symlinks with direct copies,\n"\
-"# which would break $$i's plugin path. This wrapper execs into the real\n"\
-"# binary, which is enough to fix that problem.\n"\
-"exec $(prefix)/m68k-neogeo-elf/bin/$$i.exe \$$*" > $(DESTDIR)$(prefix)/bin/m68k-neogeo-elf-$$i.exe; \
+	    printf '%s\n' \
+	        '#!/bin/sh' \
+	        '# NOTE: MINGW may implement symlinks as direct copies, which would' \
+	        "# break the real binary's plugin path. This wrapper execs into it," \
+	        '# resolving the path relative to this script so the installed tree' \
+	        '# stays relocatable.' \
+	        'here=$$(CDPATH= cd -- "$$(dirname -- "$$0")" && pwd)' \
+	        'exec "$$here/../m68k-neogeo-elf/bin/'"$$i"'.exe" "$$@"' \
+	        > $(DESTDIR)$(prefix)/bin/m68k-neogeo-elf-$$i.exe; \
 	    chmod +x $(DESTDIR)$(prefix)/bin/m68k-neogeo-elf-$$i.exe; \
 	done
 else
@@ -437,9 +440,15 @@ install-ngsdcc: $(BUILD)/ngsdcc
 	for f in `find . -name 'z80-neogeo-ihx-*'`; do \
 	    fbase=`echo $$f | cut -d- -f4`; \
 	    mv $$f "$(DESTDIR)$(prefix)/z80-neogeo-ihx/bin/$$fbase"; \
-	    echo "#!/bin/sh" > "$(DESTDIR)$(prefix)/bin/$$f"; \
-	    echo "PATH=$(prefix)/z80-neogeo-ihx/bin:\$$PATH" >> "$(DESTDIR)$(prefix)/bin/$$f"; \
-	    echo "$(prefix)/z80-neogeo-ihx/bin/$$fbase \$$@" >> "$(DESTDIR)$(prefix)/bin/$$f"; \
+	    printf '%s\n' \
+	        '#!/bin/sh' \
+	        '# Relocatable wrapper: resolve sibling paths relative to this script' \
+	        '# so the installed tree can be moved or extracted anywhere.' \
+	        'here=$$(CDPATH= cd -- "$$(dirname -- "$$0")" && pwd)' \
+	        'bindir=$$here/../z80-neogeo-ihx/bin' \
+	        'PATH=$$bindir:$$PATH; export PATH' \
+	        'exec "$$bindir/'"$$fbase"'" "$$@"' \
+	        > "$(DESTDIR)$(prefix)/bin/$$f"; \
 	    chmod 755 "$(DESTDIR)$(prefix)/bin/$$f"; \
 	done)
 
