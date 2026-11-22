@@ -1,8 +1,12 @@
 name: Build and Test
 on:
+  workflow_dispatch:
   push:
+    branches:
+      - "ci/**"
+  pull_request:
     branches-ignore:
-      - 'master'
+      - "ci/**"
 jobs:
   cache:
     name: Cache Toolchain dependencies
@@ -123,7 +127,7 @@ jobs:
 
   macos:
     name: macOS build
-    runs-on: macos-latest
+    runs-on: xcode-27
     needs: [cache]
     env:
       PREFIX: "/usr/local/ngdevkit"
